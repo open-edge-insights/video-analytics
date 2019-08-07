@@ -47,7 +47,7 @@ class Classifier(BaseClassifier):
     def classify(self):
         """Classify the given image.
         """
-        while True:
+        while not self.stop_ev.is_set():
             metadata, frame = self.input_queue.get()
             self.output_queue.put((metadata, frame))
             self.log.debug("metadata: {} added to classifier output queue".

@@ -59,25 +59,25 @@ class VideoAnalytics:
                                             self._on_change_config_callback)
 
     def _read_classifier_config(self):
-        """Read Classifier's config data from ETCD.
+        """Reads classifier config from distributed data store
         """
         config = self.config_client.GetConfig("/{0}{1}".format(
             self.app_name, CONFIG_KEY_PATH))
 
         self.classifier_config = json.loads(config)
 
-    def _print_config(self):
-        """Prints the config data of Classifier.
+    def _print_classifier_config(self):
+        """Prints classifier config
         """
         self.log.info('classifier config: {}'.format(self.classifier_config))
 
     def start(self):
-        """ Start the Video Analytics.
+        """Starts the Video Analytics pipeline
         """
         log_msg = "======={} {}======="
         self.log.info(log_msg.format("Starting", self.app_name))
 
-        self._print_config()
+        self._print_classifier_config()
 
         queue_size = self.classifier_config["queue_size"]
         classifier_input_queue = \
@@ -102,21 +102,17 @@ class VideoAnalytics:
         self.log.info(log_msg.format("Started", self.app_name))
 
     def stop(self):
-        """ Stop the Video Analytics.
-        """
+        """Stops the Video Analytics pipeline"""
         log_msg = "======={} {}======="
         self.log.info(log_msg.format("Stopping", self.app_name))
-        self.subscriber.stop()
-        self.classifier.stop()
-        self.publisher.stop()
-        self.log.info(log_msg.format("Stopped", self.app_name))
+        os._exit(1)
 
     def _on_change_config_callback(self, key, value):
         """Callback method to be called by etcd
 
-        :param key: Etcd key
+        :param key: distributed store key
         :type key: str
-        :param value: Etcd value
+        :param value: changed value
         :type value: str
         """
         try:

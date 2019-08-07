@@ -99,7 +99,7 @@ class Classifier(BaseClassifier):
         each input image for classification.
         """
 
-        while True:
+        while not self.stop_ev.is_set():
             metadata, frame = self.input_queue.get()
             self.log.debug("classify data: metadata:{}".format(metadata))
 

@@ -79,24 +79,24 @@ Sample configuration for classifiers used:
 
 **Sample classifiers code**
 
-|  File	| Description 	| Link  	|
-|---	|---	|---	|
-| base_classifier.py | Base class for all classifiers | [Link](..libs/base_classifier.py) |
-| pcb_classifier.py  | PCB Demo classifier for detecting defects like shorts missing etc.,  | [Link](classifiers/pcb_classifier.py) |
-| sample_classification_classifier.py | Sample classification classifier | [Link](classifiers/sample_classification_classifier.py) |
-| dummy_classifier.py | Doesn't do any classification  | [Link](classifiers/dummy_classifier.py) |
+|  File	                              | Description 	                             | Link  	                                                |
+|---	                              |---	                                         |---	                                                    |
+| base_classifier.py                  | Base class for all classifiers               | [Link](..libs/base_classifier.py)                        |
+| pcb_classifier.py                   | PCB Demo classifier for detecting defects    | [Link](classifiers/pcb_classifier.py)                    |
+| sample_classification_classifier.py | Sample classification classifier             | [Link](classifiers/sample_classification_classifier.py)  |
+| dummy_classifier.py                 | Doesn't do any classification                | [Link](classifiers/dummy_classifier.py)                  |
 
 
 #### `Detailed description on each of the keys used`
 
-|  Key	| Description 	| Possible Values  	| Required/Optional	|
-|---	|---	|---	|---	|
-|  name 	|   File name of the classifier	| "pcb_classfier" or "sample_classification_classifier" or "dummy_classifier" |   Required	|
-|  queue_size 	|   Input and output queue size of classifier | any number that suits the platform resources	|  Required	|
-|  max_workers 	|   Number of threads running classification algo	|   any number that suits the platform resources | Required |
-|  model_xml	|  xml file generated from openvino model optimizer | - | Required |
-|  model_bin	|  bin file generated from openvino model optimizer | - | Required |
-|  device	|  device on which the inference occurs | "CPU" or "GPU" or "HDDL" or "MYRIAD" | Required |
+|  Key	        | Description 	                                    | Possible Values  	                             | Required/Optional |
+|---	        |---	                                            |---	                                         |---	             |
+|  name 	    |   File name of the classifier	                    |  "pcb_classfier"/"sample_classification_classifier"/"dummy_classifier" |   Required	|
+|  queue_size 	|   Input and output queue size of classifier       | any number that suits the platform resources	 |  Required	     |
+|  max_workers 	|   Number of threads running classification algo (Not more than 5 * number of cpu cores)	    |   any number that suits the platform resources | Required |
+|  model_xml	|  xml file generated from openvino model optimizer | -                                              | Required          |
+|  model_bin	|  bin file generated from openvino model optimizer | -                                              | Required          |
+|  device	    |  device on which the inference occurs             | "CPU"/"GPU"/"HDDL"/"MYRIAD"                    | Required          |
 
 **Note**: The other keys used are specific to classifier usecase
 

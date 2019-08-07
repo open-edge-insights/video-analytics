@@ -24,6 +24,7 @@ import logging
 import cv2
 import numpy as np
 import json
+import threading
 
 from .defect import Defect
 from .display_info import DisplayInfo
@@ -176,9 +177,8 @@ class Classifier(BaseClassifier):
         """Reads the image frame from input queue for classifier
         and classifies against the specified reference image.
         """
-        while True:
+        while not self.stop_ev.is_set():
             metadata, frame = self.input_queue.get()
-            self.log.debug("classify data: metadata:{}".format(metadata))
 
             # Convert the buffer into np array.
             np_buffer = np.frombuffer(frame, dtype=np.uint8)
@@ -328,5 +328,6 @@ class Classifier(BaseClassifier):
             metadata["defects"] = defect_res
 
             self.output_queue.put((metadata, frame))
-            self.log.debug("metadata: {} added to classifier output queue".
-                           format(metadata))
+            self.log.debug("metadata: {} added to output queue".format(
+                metadata))
+
