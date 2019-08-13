@@ -1,0 +1,21 @@
+cert-tool/
+dist_libs/
+docker_setup/
+FactoryControlApp/
+licenses/
+Telegraf/
+test_videos/
+InfluxDBConnector/
+VideoIngestion/
+
+DataAnalytics/PointDataAnalytics/
+.git
+
+# Recursively remove all unwanted files
+**/*.md
+**/*.mp4
+**/*.avi
+**/*.pyc
+**/*.tar
+**/*.log
+**/*.log.*
