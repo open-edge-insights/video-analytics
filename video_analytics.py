@@ -53,6 +53,12 @@ class VideoAnalytics:
             "keyFile": "",
             "trustFile": ""
         }
+        if not self.dev_mode:
+            conf = {
+                "certFile": "/run/secrets/etcd_VideoAnalytics_cert",
+                "keyFile": "/run/secrets/etcd_VideoAnalytics_key",
+                "trustFile": "/run/secrets/ca_etcd"
+            }
 
         cfg_mgr = ConfigManager()
         self.config_client = cfg_mgr.get_config_client("etcd", conf)
