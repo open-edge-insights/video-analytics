@@ -142,9 +142,6 @@ def parse_args():
     :rtype: object
     """
     parser = argparse.ArgumentParser()
-
-    parser.add_argument('--log', choices=LOG_LEVELS.keys(), default='INFO',
-                        help='Logging level (df: INFO)')
     parser.add_argument('--log-dir', dest='log_dir', default='logs',
                         help='Directory to for log files')
 
@@ -154,6 +151,22 @@ def parse_args():
 def main():
     """Main method
     """
+    dev_mode = bool(strtobool(os.environ["DEV_MODE"]))
+    # Initializing Etcd to set env variables
+    conf = {
+            "certFile": "",
+            "keyFile": "",
+            "trustFile": ""
+        }
+    if not dev_mode:
+        conf = {
+            "certFile": "/run/secrets/etcd_FactoryControlApp_cert",
+            "keyFile": "/run/secrets/etcd_FactoryControlApp_key",
+            "trustFile": "/run/secrets/ca_etcd"
+        }
+    cfg_mgr = ConfigManager()
+    _ = cfg_mgr.get_config_client("etcd", conf)
+
     # Parse command line arguments
     args = parse_args()
 
@@ -166,9 +179,9 @@ def main():
     if not os.path.exists(args.log_dir):
         os.mkdir(args.log_dir)
 
-    log = configure_logging(args.log.upper(), logFileName, args.log_dir,
+    log = configure_logging(os.environ['PY_LOG_LEVEL'].upper(),
+                            logFileName, args.log_dir,
                             __name__)
-
     va = VideoAnalytics()
 
     def handle_signal(signum, frame):

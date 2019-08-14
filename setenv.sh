@@ -6,9 +6,7 @@ source ../../docker_setup/.env
 export DEV_MODE=$DEV_MODE
 export PROFILING=$PROFILING
 export INFLUX_SERVER=$INFLUX_SERVER
-export DATA_AGENT_GRPC_SERVER=$DATA_AGENT_GRPC_SERVER
 export DEV_MODE=$DEV_MODE
-export GRPC_INTERNAL_PORT=$GRPC_INTERNAL_PORT
 
 # Set PythonPATH
 export PYTHONPATH="../../:..:/opt/intel/openvino_2019.1.133/python/python3.6/ubuntu16/"

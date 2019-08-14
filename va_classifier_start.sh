@@ -9,4 +9,4 @@ udevadm trigger
 #$HDDL_INSTALL_DIR/bin/hddldaemon &
 #sleep 20
 
-python3.6 VideoAnalytics/video_analytics.py --log $PY_LOG_LEVEL
+python3.6 VideoAnalytics/video_analytics.py

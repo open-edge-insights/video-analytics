@@ -42,7 +42,7 @@ class Publisher:
                          or development
         :type dev_mode: Boolean
         """
-        self.log = logging.getLogger(__name__)
+        self.log = logging.getLogger('__main__')
         self.classifier_output_queue = classifier_output_queue
         self.stop_ev = threading.Event()
         self.config_client = config_client
