@@ -40,28 +40,20 @@ CONFIG_KEY_PATH = "/config"
 
 class VideoAnalytics:
 
-    def __init__(self):
+    def __init__(self, dev_mode, config_client):
         """Get the video frames from messagebus, classify and add the results
         back to the messagebus
+
+        :param dev_mode: indicates whether it's dev or prod mode
+        :type dev_mode: bool
+        :param config_client: distributed store config client
+        :type config_client: config client object
         """
         self.log = logging.getLogger(__name__)
         self.profiling = bool(strtobool(os.environ['PROFILING']))
-        self.dev_mode = bool(strtobool(os.environ["DEV_MODE"]))
+        self.dev_mode = dev_mode
         self.app_name = os.environ["AppName"]
-        conf = {
-            "certFile": "",
-            "keyFile": "",
-            "trustFile": ""
-        }
-        if not self.dev_mode:
-            conf = {
-                "certFile": "/run/secrets/etcd_VideoAnalytics_cert",
-                "keyFile": "/run/secrets/etcd_VideoAnalytics_key",
-                "trustFile": "/run/secrets/ca_etcd"
-            }
-
-        cfg_mgr = ConfigManager()
-        self.config_client = cfg_mgr.get_config_client("etcd", conf)
+        self.config_client = config_client
         self._read_classifier_config()
         self.config_client.RegisterDirWatch("/{0}/".format(self.app_name),
                                             self._on_change_config_callback)
@@ -163,10 +155,27 @@ def main():
     if not os.path.exists(args.log_dir):
         os.mkdir(args.log_dir)
 
+    dev_mode = bool(strtobool(os.environ["DEV_MODE"]))
+
+    conf = {
+        "certFile": "",
+        "keyFile": "",
+        "trustFile": ""
+    }
+    if not dev_mode:
+        conf = {
+            "certFile": "/run/secrets/etcd_VideoAnalytics_cert",
+            "keyFile": "/run/secrets/etcd_VideoAnalytics_key",
+            "trustFile": "/run/secrets/ca_etcd"
+        }
+
+    cfg_mgr = ConfigManager()
+    config_client = cfg_mgr.get_config_client("etcd", conf)
+
     log = configure_logging(os.environ['PY_LOG_LEVEL'].upper(),
                             logFileName, args.log_dir,
                             __name__)
-    va = VideoAnalytics()
+    va = VideoAnalytics(dev_mode, config_client)
 
     def handle_signal(signum, frame):
         log.info('Video Ingestion program killed...')

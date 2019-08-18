@@ -92,8 +92,7 @@ class Publisher:
                 self.log.debug("Published data: {} on topic: {} with "+
                                "config: {}...".format(metadata,
                                                       topic, msgbus_cfg))
-                self.log.info("Published data on topic: {} with config: {}".
-                              format(topic, msgbus_cfg))
+                self.log.info("Published data on topic: {}".format(topic))
         except Exception as ex:
             self.log.exception('Error while publishing data:\
                             {}'.format(ex))
