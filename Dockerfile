@@ -1,6 +1,6 @@
 # Dockerfile for VideoAnalytics
 ARG EIS_VERSION
-FROM ia_pybase:$EIS_VERSION
+FROM ia_pybase:$EIS_VERSION as pybase
 LABEL description="VideoAnalytics image"
 
 ARG EIS_UID
@@ -47,11 +47,27 @@ COPY va_requirements.txt .
 RUN pip3.6 install -r va_requirements.txt && \
     rm -rf va_requirements.txt
 
-# Adding project depedency modules
+FROM ia_common:$EIS_VERSION as common
 
-COPY . ./VideoAnalytics/
+FROM pybase
+
+COPY --from=common /libs ${PY_WORK_DIR}/libs
+COPY --from=common /Util ${PY_WORK_DIR}/Util
+
+RUN cd ./libs/EISMessageBus && \
+    rm -rf build deps && \
+    mkdir build && \
+    cd build && \
+    cmake -DWITH_PYTHON=ON .. && \
+    make && \
+    make install
 
 ENV PYTHONPATH ${PYTHONPATH}:.
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:"/usr/local/lib"
+
+# Adding project depedency modules
+COPY . ./VideoAnalytics/
+
 RUN chmod +x ./VideoAnalytics/va_classifier_start.sh
 
 ENTRYPOINT ["./VideoAnalytics/va_classifier_start.sh"]
