@@ -36,7 +36,7 @@ RUN rm -rf ${HOME}/l_openvino_toolkit*
 # Myriad and HDDL requirements
 RUN apt install -y libusb-1.0-0 libboost-program-options1.58.0 libboost-thread1.58.0 \
     libboost-filesystem1.58.0 libssl1.0.0 libudev1 libjson-c2 udev 
-ADD 97-myriad-usbboot.rules .    
+COPY 97-myriad-usbboot.rules .    
 RUN echo "source /opt/intel/openvino/bin/setupvars.sh" >> ~/.bashrc && \
     cp /EIS/97-myriad-usbboot.rules /etc/udev/rules.d/ && \
     echo "udevadm control --reload-rules" >> ~/.bashrc && \
@@ -63,7 +63,6 @@ RUN cd ./libs/EISMessageBus && \
     make install
 
 ENV PYTHONPATH ${PYTHONPATH}:.
-ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:"/usr/local/lib"
 
 # Adding project depedency modules
 COPY . ./VideoAnalytics/
