@@ -42,7 +42,7 @@ class Publisher:
                          or development
         :type dev_mode: Boolean
         """
-        self.log = logging.getLogger('__main__')
+        self.log = logging.getLogger(__name__)
         self.classifier_output_queue = classifier_output_queue
         self.stop_ev = threading.Event()
         self.config_client = config_client
@@ -78,7 +78,9 @@ class Publisher:
             publisher = msgbus.new_publisher(topic)
             thread_id = threading.get_ident()
             log_msg = "Thread ID: {} {} with topic:{} and msgbus_cfg:{}"
-            self.log.info(log_msg.format(thread_id, "started", topic, msgbus_cfg))
+            self.log.info(log_msg.format(thread_id, "started",
+                                         topic,
+                                         msgbus_cfg))
             self.log.info("Publishing to topic: {}...".format(topic))
             while not self.stop_ev.is_set():
                 metadata, frame = self.classifier_output_queue.get()
@@ -89,7 +91,7 @@ class Publisher:
                     metadata['display_info'] = \
                         json.dumps(metadata['display_info'])
                 publisher.publish((metadata, frame))
-                self.log.debug("Published data: {} on topic: {} with "+
+                self.log.debug("Published data: {} on topic: {} with " +
                                "config: {}...".format(metadata,
                                                       topic, msgbus_cfg))
                 self.log.info("Published data on topic: {}".format(topic))
