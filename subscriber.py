@@ -63,6 +63,12 @@ class Subscriber:
                                                     self.config_client,
                                                     self.dev_mode)
 
+            topic = topic.strip()
+            if not self.dev_mode:
+                for key in msgbus_cfg[topic]:
+                    if msgbus_cfg[topic][key] is None:
+                        raise ValueError("Invalid Config")
+
             self.subscriber_threadpool.submit(self.subscribe, topic,
                                               msgbus_cfg)
 
