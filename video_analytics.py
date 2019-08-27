@@ -122,35 +122,9 @@ class VideoAnalytics:
         except Exception as ex:
             self.log.exception(ex)
 
-
-def parse_args():
-    """Parse command line arguments
-
-    :return: Object of Argument Parser
-    :rtype: object
-    """
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--log-dir', dest='log_dir', default='logs',
-                        help='Directory to for log files')
-
-    return parser.parse_args()
-
-
 def main():
     """Main method
     """
-    # Parse command line arguments
-    args = parse_args()
-
-    currentDateTime = str(datetime.datetime.now())
-    listDateTime = currentDateTime.split(" ")
-    currentDateTime = "_".join(listDateTime)
-    logFileName = 'videoanalytics_' + currentDateTime + '.log'
-
-    # Creating log directory if it does not exist
-    if not os.path.exists(args.log_dir):
-        os.mkdir(args.log_dir)
-
     dev_mode = bool(strtobool(os.environ["DEV_MODE"]))
 
     conf = {
@@ -169,8 +143,8 @@ def main():
     config_client = cfg_mgr.get_config_client("etcd", conf)
 
     log = configure_logging(os.environ['PY_LOG_LEVEL'].upper(),
-                            logFileName, args.log_dir,
                             __name__)
+
     va = VideoAnalytics(dev_mode, config_client)
 
     def handle_signal(signum, frame):
