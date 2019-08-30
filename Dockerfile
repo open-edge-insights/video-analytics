@@ -11,7 +11,7 @@ ENV HOME /EIS
 
 # OpenVINO install
 RUN apt-get update && \
-    apt-get install -y libpng12-dev libcairo2-dev libpango1.0-dev libglib2.0-dev libgtk2.0-dev \
+    apt-get install -y libpng-dev libcairo2-dev libpango1.0-dev libglib2.0-dev libgtk-3-dev \
     libswscale-dev libavcodec-dev libavformat-dev libgstreamer1.0-0 gstreamer1.0-plugins-base \
     libusb-1.0-0-dev libva-dev libdrm-dev cpio lsb-release
 COPY l_openvino_toolkit*  ${HOME}/openvino_toolkit/
@@ -20,22 +20,20 @@ RUN cd ${HOME}/openvino_toolkit && \
     ./install.sh -s silent.cfg --ignore-cpu
 
 # Configure MO and install dependencies for processor graphics
-RUN bash -c 'source /opt/intel/openvino/bin/setupvars.sh && \
-    cd /opt/intel/openvino/deployment_tools/model_optimizer/install_prerequisites && \
-    sed -i -e "s/sudo \(-[^- ]*\)\?//g" install_prerequisites.sh && \
-    sed -i '/onnx/d' ../requirements.txt && echo "onnx==1.1.2" >> ../requirements.txt && \
-    sed -i '/networkx/d' ../requirements.txt && echo "networkx==1.11" >> ../requirements.txt && \
-    sed -i '/numpy/d' ../requirements.txt && echo "numpy==1.12.0" >> ../requirements.txt && \
-    ./install_prerequisites.sh && \
-    cd /opt/intel/openvino/install_dependencies && \
-    ./install_NEO_OCL_driver.sh'
+RUN mkdir neo && \
+    cd neo && \
+    wget https://github.com/intel/compute-runtime/releases/download/19.16.12873/intel-gmmlib_19.1.1_amd64.deb && \
+    wget https://github.com/intel/compute-runtime/releases/download/19.16.12873/intel-igc-core_1.0.2-1787_amd64.deb && \
+    wget https://github.com/intel/compute-runtime/releases/download/19.16.12873/intel-igc-opencl_1.0.2-1787_amd64.deb && \
+    wget https://github.com/intel/compute-runtime/releases/download/19.16.12873/intel-opencl_19.16.12873_amd64.deb && \
+    wget https://github.com/intel/compute-runtime/releases/download/19.16.12873/intel-ocloc_19.16.12873_amd64.deb && \
+    dpkg -i *.deb
 
 # Remove OpenVINO toolkit after installation
 RUN rm -rf ${HOME}/l_openvino_toolkit*
 
 # Myriad and HDDL requirements
-RUN apt install -y libusb-1.0-0 libboost-program-options1.58.0 libboost-thread1.58.0 \
-    libboost-filesystem1.58.0 libssl1.0.0 libudev1 libjson-c2 udev 
+RUN apt install -y libboost-all-dev libusb-1.0-0 libssl1.0.0 libudev1 libjson-c3 udev    
 COPY 97-myriad-usbboot.rules .    
 RUN echo "source /opt/intel/openvino/bin/setupvars.sh" >> ~/.bashrc && \
     cp /EIS/97-myriad-usbboot.rules /etc/udev/rules.d/ && \
