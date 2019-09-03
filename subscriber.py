@@ -22,11 +22,14 @@ import threading
 import json
 import logging
 import os
+import time
 import numpy as np
 import cv2
 from concurrent.futures import ThreadPoolExecutor
 from libs.common.py.util import Util
 import eis.msgbus as mb
+from distutils.util import strtobool
+import time
 
 
 class Subscriber:
@@ -49,6 +52,7 @@ class Subscriber:
         self.stop_ev = threading.Event()
         self.config_client = config_client
         self.dev_mode = dev_mode
+        self.profiling = bool(strtobool(os.environ['PROFILING_MODE']))
 
     def start(self):
         """Starts the subscriber thread
@@ -92,10 +96,13 @@ class Subscriber:
             self.log.info("Subscribing to topic: {}...".format(topic))
             while not self.stop_ev.is_set():
                 data = subscriber.recv()
+                if self.profiling is True:
+                    data[0]['ts_va_entry'] = str(round(time.time()*1000))
                 self.subscriber_queue.put(data)
                 self.log.debug("Subscribed data: {} on topic: {} with " +
                                "config: {}...".format(data[0], topic,
                                                       msgbus_cfg))
+                    
         except Exception as ex:
             self.log.exception('Error while subscribing data:\
                             {}'.format(ex))

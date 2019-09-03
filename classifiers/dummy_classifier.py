@@ -20,7 +20,9 @@
 
 import logging
 from libs.base_classifier import BaseClassifier
-
+from distutils.util import strtobool
+import time
+import os
 
 class Classifier(BaseClassifier):
     """Dummy classifier which never returns any defects. This is meant to aid
@@ -43,12 +45,17 @@ class Classifier(BaseClassifier):
         """
         super().__init__(classifier_config, input_queue, output_queue)
         self.log = logging.getLogger('DUMMY_CLASSIFIER')
+        self.profiling = bool(strtobool(os.environ['PROFILING_MODE']))
 
     def classify(self):
         """Classify the given image.
         """
         while not self.stop_ev.is_set():
             metadata, frame = self.input_queue.get()
+            if self.profiling is True:
+                metadata['ts_va_classify_entry'] = str(round(time.time()*1000))
+                metadata['ts_va_classify_exit'] = str(round(time.time()*1000))
+
             self.output_queue.put((metadata, frame))
             self.log.debug("metadata: {} added to classifier output queue".
                            format(metadata))

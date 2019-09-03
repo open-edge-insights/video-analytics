@@ -22,9 +22,11 @@ import threading
 import logging
 import os
 import json
+import time
 from concurrent.futures import ThreadPoolExecutor
 from libs.common.py.util import Util
 import eis.msgbus as mb
+from distutils.util import strtobool
 
 
 class Publisher:
@@ -47,6 +49,7 @@ class Publisher:
         self.stop_ev = threading.Event()
         self.config_client = config_client
         self.dev_mode = dev_mode
+        self.profiling = bool(strtobool(os.environ['PROFILING_MODE']))
 
     def start(self):
         """Starts the publisher thread(s)
@@ -90,6 +93,10 @@ class Publisher:
                 if 'display_info' in metadata:
                     metadata['display_info'] = \
                         json.dumps(metadata['display_info'])
+
+                if self.profiling is True:
+                    metadata['ts_va_exit'] = str(round(time.time()*1000))
+
                 publisher.publish((metadata, frame))
                 self.log.debug("Published data: {} on topic: {} with " +
                                "config: {}...".format(metadata,
