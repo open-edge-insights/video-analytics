@@ -122,6 +122,7 @@ class VideoAnalytics:
         except Exception as ex:
             self.log.exception(ex)
 
+
 def main():
     """Main method
     """
