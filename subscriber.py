@@ -26,7 +26,8 @@ import time
 import numpy as np
 import cv2
 from concurrent.futures import ThreadPoolExecutor
-from libs.common.py.util import Util
+from util.util import Util
+from util.msgbusutil import MsgBusUtil
 import eis.msgbus as mb
 from distutils.util import strtobool
 import time
@@ -57,12 +58,12 @@ class Subscriber:
     def start(self):
         """Starts the subscriber thread
         """
-        topics = Util.get_topics_from_env("sub")
+        topics = MsgBusUtil.get_topics_from_env("sub")
         self.subscriber_threadpool = \
             ThreadPoolExecutor(max_workers=len(topics))
         for topic in topics:
             publisher, topic = topic.split("/")
-            msgbus_cfg = Util.get_messagebus_config(topic, "sub",
+            msgbus_cfg = MsgBusUtil.get_messagebus_config(topic, "sub",
                                                     publisher,
                                                     self.config_client,
                                                     self.dev_mode)

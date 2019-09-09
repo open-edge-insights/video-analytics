@@ -50,7 +50,7 @@ FROM ia_common:$EIS_VERSION as common
 FROM pybase
 
 COPY --from=common /libs ${PY_WORK_DIR}/libs
-COPY --from=common /Util ${PY_WORK_DIR}/Util
+COPY --from=common /util ${PY_WORK_DIR}/util
 
 RUN cd ./libs/EISMessageBus && \
     rm -rf build deps && \
@@ -68,4 +68,3 @@ COPY . ./VideoAnalytics/
 RUN chmod +x ./VideoAnalytics/va_classifier_start.sh
 
 ENTRYPOINT ["./VideoAnalytics/va_classifier_start.sh"]
-HEALTHCHECK NONE

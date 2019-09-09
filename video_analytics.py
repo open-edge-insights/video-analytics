@@ -30,7 +30,7 @@ import threading
 from distutils.util import strtobool
 from libs.base_classifier import load_classifier
 from libs.ConfigManager import ConfigManager
-from libs.log import configure_logging, LOG_LEVELS
+from util.log import configure_logging, LOG_LEVELS
 from publisher import Publisher
 from subscriber import Subscriber
 
