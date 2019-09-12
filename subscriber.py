@@ -26,7 +26,6 @@ import time
 import numpy as np
 import cv2
 from concurrent.futures import ThreadPoolExecutor
-from util.util import Util
 from util.msgbusutil import MsgBusUtil
 import eis.msgbus as mb
 from distutils.util import strtobool
@@ -35,13 +34,15 @@ import time
 
 class Subscriber:
 
-    def __init__(self, subscriber_queue, config_client, dev_mode):
+    def __init__(self, subscriber_queue, topic, config_client, dev_mode):
         """Subscriber subscribes to the EISMessageBus on which VideoIngestion
            is publishing
 
         :param subscriber_queue: subscriber's output queue (has
                                  (metadata,frame) tuple data entries)
         :type subscriber_queue: queue
+        :param topic: Topic from which data is received.
+        :type topic: String
         :param config_client: Used to get keys value from ETCD.
         :type config_client: Class Object
         :param dev_mode: To check whether it is running in production mode
@@ -51,6 +52,7 @@ class Subscriber:
         self.log = logging.getLogger(__name__)
         self.subscriber_queue = subscriber_queue
         self.stop_ev = threading.Event()
+        self.topic = topic
         self.config_client = config_client
         self.dev_mode = dev_mode
         self.profiling = bool(strtobool(os.environ['PROFILING_MODE']))
@@ -58,26 +60,24 @@ class Subscriber:
     def start(self):
         """Starts the subscriber thread
         """
-        topics = MsgBusUtil.get_topics_from_env("sub")
         self.subscriber_threadpool = \
-            ThreadPoolExecutor(max_workers=len(topics))
-        for topic in topics:
-            publisher, topic = topic.split("/")
-            msgbus_cfg = MsgBusUtil.get_messagebus_config(topic, "sub",
-                                                    publisher,
-                                                    self.config_client,
-                                                    self.dev_mode)
+            ThreadPoolExecutor(max_workers=len(self.topic))
+        publisher, self.topic = self.topic.split("/")
+        msgbus_cfg = \
+            MsgBusUtil.get_messagebus_config(self.topic, "sub",
+                                             publisher,
+                                             self.config_client,
+                                             self.dev_mode)
 
-            topic = topic.strip()
-            mode_address = os.environ[topic + "_cfg"].split(",")
-            mode = mode_address[0].strip()
-            if (not self.dev_mode and mode == "zmq_tcp"):
-                for key in msgbus_cfg[topic]:
-                    if msgbus_cfg[topic][key] is None:
-                        raise ValueError("Invalid Config")
+        topic = self.topic.strip()
+        mode_address = os.environ[topic + "_cfg"].split(",")
+        mode = mode_address[0].strip()
+        if (not self.dev_mode and mode == "zmq_tcp"):
+            for key in msgbus_cfg[topic]:
+                if msgbus_cfg[topic][key] is None:
+                    raise ValueError("Invalid Config")
 
-            self.subscriber_threadpool.submit(self.subscribe, topic,
-                                              msgbus_cfg)
+        self.subscriber_threadpool.submit(self.subscribe, topic, msgbus_cfg)
 
     def subscribe(self, topic, msgbus_cfg):
         """Receives the data for the subscribed topic
@@ -93,7 +93,8 @@ class Subscriber:
             subscriber = msgbus.new_subscriber(topic)
             thread_id = threading.get_ident()
             log_msg = "Thread ID: {} {} with topic:{} and msgbus_cfg:{}"
-            self.log.info(log_msg.format(thread_id, "started", topic, msgbus_cfg))
+            self.log.info(log_msg.format(thread_id, "started",
+                                         topic, msgbus_cfg))
             self.log.info("Subscribing to topic: {}...".format(topic))
             while not self.stop_ev.is_set():
                 data = subscriber.recv()
@@ -103,7 +104,7 @@ class Subscriber:
                 self.log.debug("Subscribed data: {} on topic: {} with " +
                                "config: {}...".format(data[0], topic,
                                                       msgbus_cfg))
-                    
+
         except Exception as ex:
             self.log.exception('Error while subscribing data:\
                             {}'.format(ex))

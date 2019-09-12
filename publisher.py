@@ -24,7 +24,6 @@ import os
 import json
 import time
 from concurrent.futures import ThreadPoolExecutor
-from util.util import Util
 from util.msgbusutil import MsgBusUtil
 import eis.msgbus as mb
 from distutils.util import strtobool
@@ -32,13 +31,16 @@ from distutils.util import strtobool
 
 class Publisher:
 
-    def __init__(self, classifier_output_queue, config_client, dev_mode):
+    def __init__(self, classifier_output_queue, topic, config_client,
+                 dev_mode):
         """Publisher will get the classified data from the classified queue and
            send it to EIS Message Bus
 
         :param classifier_output_queue: Input queue for publisher (has
                                         (metadata,frame) tuple data entries)
         :type classifier_output_queue: queue
+        :param topic: Topic on which data is published
+        :type topic: String
         :param config_client: Used to get keys value from ETCD.
         :type config_client: Class Object
         :param dev_mode: To check whether it is running in production mode
@@ -48,6 +50,7 @@ class Publisher:
         self.log = logging.getLogger(__name__)
         self.classifier_output_queue = classifier_output_queue
         self.stop_ev = threading.Event()
+        self.topic = topic
         self.config_client = config_client
         self.dev_mode = dev_mode
         self.profiling = bool(strtobool(os.environ['PROFILING_MODE']))
@@ -55,19 +58,17 @@ class Publisher:
     def start(self):
         """Starts the publisher thread(s)
         """
-        topics = MsgBusUtil.get_topics_from_env("pub")
-        self.publisher_threadpool = ThreadPoolExecutor(max_workers=len(topics))
+        self.publisher_threadpool = \
+            ThreadPoolExecutor(max_workers=len(self.topic))
         subscribers = os.environ['Clients'].split(",")
-        for topic in topics:
-            msgbus_cfg = MsgBusUtil.get_messagebus_config(topic, "pub",
-                                                    subscribers,
-                                                    self.config_client,
-                                                    self.dev_mode)
+        msgbus_cfg = \
+            MsgBusUtil.get_messagebus_config(self.topic, "pub", subscribers,
+                                             self.config_client,
+                                             self.dev_mode)
 
-            self.publisher_threadpool.submit(self.publish, topic,
-                                             msgbus_cfg)
+        self.publisher_threadpool.submit(self.publish, msgbus_cfg)
 
-    def publish(self, topic, msgbus_cfg):
+    def publish(self, msgbus_cfg):
         """Send the data to the publish topic
 
         :param topic: Publishers's topic name
@@ -79,13 +80,13 @@ class Publisher:
         try:
             self.log.info("config:{}".format(msgbus_cfg))
             msgbus = mb.MsgbusContext(msgbus_cfg)
-            publisher = msgbus.new_publisher(topic)
+            publisher = msgbus.new_publisher(self.topic)
             thread_id = threading.get_ident()
             log_msg = "Thread ID: {} {} with topic:{} and msgbus_cfg:{}"
             self.log.info(log_msg.format(thread_id, "started",
-                                         topic,
+                                         self.topic,
                                          msgbus_cfg))
-            self.log.info("Publishing to topic: {}...".format(topic))
+            self.log.info("Publishing to topic: {}...".format(self.topic))
             while not self.stop_ev.is_set():
                 metadata, frame = self.classifier_output_queue.get()
                 if 'defects' in metadata:
@@ -100,16 +101,17 @@ class Publisher:
 
                 publisher.publish((metadata, frame))
                 self.log.debug("Published data: {} on topic: {} with " +
-                               "config: {}...".format(metadata,
-                                                      topic, msgbus_cfg))
-                self.log.info("Published data on topic: {}".format(topic))
+                               "config: {}...".format(metadata, self.topic,
+                                                      msgbus_cfg))
+                self.log.info("Published data on topic: {}".format(self.topic))
         except Exception as ex:
             self.log.exception('Error while publishing data:\
                             {}'.format(ex))
         finally:
             if publisher is not None:
                 publisher.close()
-        self.log.info(log_msg.format(thread_id, "stopped", topic, msgbus_cfg))
+        self.log.info(log_msg.format(thread_id, "stopped", self.topic,
+                                     msgbus_cfg))
 
     def stop(self):
         """Stops the pubscriber thread

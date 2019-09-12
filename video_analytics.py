@@ -26,11 +26,13 @@ import argparse
 import json
 import logging
 import threading
+import sys
 
 from distutils.util import strtobool
 from libs.base_classifier import load_classifier
 from libs.ConfigManager import ConfigManager
 from util.log import configure_logging, LOG_LEVELS
+from util.msgbusutil import MsgBusUtil
 from publisher import Publisher
 from subscriber import Subscriber
 
@@ -77,6 +79,19 @@ class VideoAnalytics:
         log_msg = "======={} {}======="
         self.log.info(log_msg.format("Starting", self.app_name))
 
+        pub_topic = MsgBusUtil.get_topics_from_env("pub")
+        sub_topic = MsgBusUtil.get_topics_from_env("sub")
+
+        if len(pub_topic) > 1:
+            self.log.error("More than one publish topic in {} " +
+                           "is not allowed".format(self.app_name))
+            sys.exit(1)
+
+        if len(sub_topic) > 1:
+            self.log.error("More than one subscribe topic in {} " +
+                           "is not allowed".format(self.app_name))
+            sys.exit(1)
+
         self._print_classifier_config()
 
         queue_size = self.classifier_config["queue_size"]
@@ -86,7 +101,10 @@ class VideoAnalytics:
         classifier_output_queue = \
             queue.Queue(maxsize=queue_size)
 
-        self.publisher = Publisher(classifier_output_queue,
+        pub_topic = pub_topic[0]
+        sub_topic = sub_topic[0]
+
+        self.publisher = Publisher(classifier_output_queue, pub_topic,
                                    self.config_client, self.dev_mode)
         self.publisher.start()
 
@@ -96,7 +114,7 @@ class VideoAnalytics:
                                           classifier_output_queue)
         self.classifier.start()
 
-        self.subscriber = Subscriber(classifier_input_queue,
+        self.subscriber = Subscriber(classifier_input_queue, sub_topic,
                                      self.config_client, self.dev_mode)
         self.subscriber.start()
         self.log.info(log_msg.format("Started", self.app_name))
