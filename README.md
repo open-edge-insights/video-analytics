@@ -35,6 +35,7 @@ If `AppName` is `VideoAnalytics`, then the app's config would look like as below
         "device": "CPU""
     }
  ```
+For more details on Etcd and MessageBus endpoint configuration, visit [Etcd_and_MsgBus_Endpoint_Configuration](../Etcd_and_MsgBus_Endpoint_Configuration].md).
 
 
 ### `Messagebus Endpoints config`
@@ -135,7 +136,6 @@ Sample configuration for classifiers used:
     1. Build and Run VideoAnalytics as container
         ```
         $ cd [repo]/docker_setup
-        $ ln -sf DataAnalytics/VideoAnalytics/.dockerignore ../.dockerignore
         $ docker-compose up --build ia_video_analytics
         ```
     2. For any updates to EIS VideoAnalytics config key in `etcd` using UI's
