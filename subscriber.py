@@ -31,7 +31,6 @@ import eis.msgbus as mb
 from distutils.util import strtobool
 import time
 
-
 class Subscriber:
 
     def __init__(self, subscriber_queue, topic, config_client, dev_mode):
@@ -101,6 +100,9 @@ class Subscriber:
                 if self.profiling is True:
                     data[0]['ts_va_entry'] = str(round(time.time()*1000))
                 self.subscriber_queue.put(data)
+
+                #This sleep required to make sure CPU gets released for other threads
+                time.sleep(0.001)
                 self.log.debug("Subscribed data: {} on topic: {} with " +
                                "config: {}...".format(data[0], topic,
                                                       msgbus_cfg))

@@ -30,6 +30,8 @@ from .defect import Defect
 from .display_info import DisplayInfo
 from libs.base_classifier import BaseClassifier
 from openvino.inference_engine import IENetwork, IEPlugin
+from distutils.util import strtobool
+import time
 
 """FLANN algorithm classifier
 """
@@ -89,6 +91,7 @@ class Classifier(BaseClassifier):
         self.output_blob = next(iter(self.net.outputs))
         self.net.batch_size = 1  # change to enable batch loading
         self.exec_net = self.plugin.load(network=self.net)
+        self.profiling = bool(strtobool(os.environ['PROFILING_MODE']))
 
         # Initialize keypoint descriptor
         self.brisk = cv2.BRISK_create()
@@ -179,6 +182,9 @@ class Classifier(BaseClassifier):
         """
         while not self.stop_ev.is_set():
             metadata, frame = self.input_queue.get()
+            
+            if self.profiling is True:
+                metadata['ts_va_classify_entry'] = str(round(time.time()*1000))
 
             # Convert the buffer into np array.
             np_buffer = np.frombuffer(frame, dtype=np.uint8)
@@ -326,6 +332,9 @@ class Classifier(BaseClassifier):
                 })
 
             metadata["defects"] = defect_res
+
+            if self.profiling is True:
+                metadata['ts_va_classify_exit'] = str(round(time.time()*1000))
 
             self.output_queue.put((metadata, frame))
             self.log.debug("metadata: {} added to output queue".format(
