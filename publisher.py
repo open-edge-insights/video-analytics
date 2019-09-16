@@ -78,14 +78,13 @@ class Publisher:
         """
         publisher = None
         try:
-            self.log.info("config:{}".format(msgbus_cfg))
+            self.log.debug("config:{}".format(msgbus_cfg))
             msgbus = mb.MsgbusContext(msgbus_cfg)
             publisher = msgbus.new_publisher(self.topic)
             thread_id = threading.get_ident()
-            log_msg = "Thread ID: {} {} with topic:{} and msgbus_cfg:{}"
+            log_msg = "Thread ID: {} {} with topic:{}"
             self.log.info(log_msg.format(thread_id, "started",
-                                         self.topic,
-                                         msgbus_cfg))
+                                         self.topic))
             self.log.info("Publishing to topic: {}...".format(self.topic))
             while not self.stop_ev.is_set():
                 metadata, frame = self.classifier_output_queue.get()
@@ -100,9 +99,8 @@ class Publisher:
                     metadata['ts_va_exit'] = str(round(time.time()*1000))
 
                 publisher.publish((metadata, frame))
-                self.log.debug("Published data: {} on topic: {} with " +
-                               "config: {}...".format(metadata, self.topic,
-                                                      msgbus_cfg))
+                self.log.debug("Published data: {} on topic: {}".format(metadata,
+                                                                        self.topic))
                 self.log.info("Published data on topic: {}".format(self.topic))
         except Exception as ex:
             self.log.exception('Error while publishing data:\
@@ -110,8 +108,7 @@ class Publisher:
         finally:
             if publisher is not None:
                 publisher.close()
-        self.log.info(log_msg.format(thread_id, "stopped", self.topic,
-                                     msgbus_cfg))
+        self.log.info(log_msg.format(thread_id, "stopped", self.topic))
 
     def stop(self):
         """Stops the pubscriber thread
