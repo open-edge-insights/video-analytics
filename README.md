@@ -35,30 +35,7 @@ If `AppName` is `VideoAnalytics`, then the app's config would look like as below
         "device": "CPU""
     }
  ```
-For more details on Etcd and MessageBus endpoint configuration, visit [Etcd_and_MsgBus_Endpoint_Configuration](../Etcd_and_MsgBus_Endpoint_Configuration].md).
-
-
-### `Messagebus Endpoints config`
-
-The ENVs mentioned below in the environment section of this app's service in
-[docker-compose.yml](../docker_setup/docker-compose.yml) are
-needed by the messagebus subscriber and publisher thread to start subscribing
-to the published topics data and start publishing classified results data on
-new topics
-
-```
-SubTopics: "<publisher_appname>stream1,<publisher_appname>stream2"
-stream1_cfg: "<protocol>,<endpoint>"
-stream2_cfg: "<protocol>,<endpoint>"
-
-PubTopics: "stream1_results, stream2_results"
-stream1_results_cfg: "<protocol>,<endpoint>"
-stream2_results_cfg: "<protocol>,<endpoint>"
-```
-
-> **NOTE**: If `<protocol>` is `zmq/ipc`, then `<endpoint>` has to be the
-> `socket_dir_name` where unix socket files are created. If `<protocol>` is
-> `zmq/tcp`, then `<endpoint>` has to be the combination of `<hostname>:<port>`.
+For more details on Etcd and MessageBus endpoint configuration, visit [Etcd_and_MsgBus_Endpoint_Configuration](../Etcd_and_MsgBus_Endpoint_Configuration.md).
 
 ### `Classifier config`
 
@@ -127,7 +104,7 @@ Sample configuration for classifiers used:
 
 ## `Installation`
 
-* Follow [provision/README.md](../docker_setup/provision/README.md) for EIS provisioning
+* Follow [provision/README.md](../README#provision-eis.md) for EIS provisioning
 
 * Run VideoAnalytics
 
