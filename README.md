@@ -58,6 +58,28 @@ Sample configuration for classifiers used:
     }
     ```
 
+    ----
+    **NOTE**:
+    The above config works for both "CPU" and "GPU" devices after setting
+    appropriate `device` value. If the device in the above config is "HDDL" or
+    "MYRIAD", please use the below config where the model_xml and model_bin
+    files are different. Please set the "device" value appropriately based on
+    the device used for inferencing.
+      ```
+      {
+          "name": "pcb_classifier",
+          "queue_size": 10,
+          "max_workers": 1,
+          "ref_img": "./VideoAnalytics/classifiers/ref_pcbdemo/ref.png",
+          "ref_config_roi": "./VideoAnalytics/classifiers/ref_pcbdemo/roi_1.json",
+          "model_xml": "./VideoAnalytics/classifiers/ref_pcbdemo/pcb_fp16.xml",
+          "model_bin": "./VideoAnalytics/classifiers/ref_pcbdemo/pcb_fp16.bin",
+          "device": "HDDL"
+      }
+      ```
+    ----
+
+
 2. **Classification sample classifier** (has to be used with `Bypass Filter`)
    ```
     {
@@ -70,6 +92,27 @@ Sample configuration for classifiers used:
         "device": "CPU"
     }
    ```
+
+   ----
+    **NOTE**:
+    The above config works for both "CPU" and "GPU" devices after setting
+    appropriate `device` value. If the device in the above config is "HDDL" or
+    "MYRIAD", please use the below config where the model_xml and model_bin files
+    are different. Please set the "device" value appropriately based on the
+    device used for inferencing.
+      ```
+      {
+          "name": "sample_classification_classifier",
+          "queue_size": 10,
+          "max_workers": 1,
+          "model_xml": "./VideoAnalytics/classifiers/ref_classification/squeezenet1.1_FP16.xml",
+          "model_bin": "./VideoAnalytics/classifiers/ref_classification/squeezenet1.1_FP16.bin",
+          "labels": "./VideoAnalytics/classifiers/ref_classification/squeezenet1.1.labels",
+          "device": "HDDL"
+      }
+      ```
+    ----
+
 3. **Dummy classifier** (to be used when no classification needs to be done)
    ```
     {
