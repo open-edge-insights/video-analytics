@@ -96,7 +96,7 @@ class Publisher:
                         json.dumps(metadata['display_info'])
 
                 if self.profiling is True:
-                    metadata['ts_va_exit'] = str(round(time.time()*1000))
+                    metadata['ts_va_exit'] = time.time()*1000
 
                 publisher.publish((metadata, frame))
                 self.log.debug("Published data: {} on topic: {}".format(metadata,

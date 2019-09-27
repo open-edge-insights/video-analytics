@@ -53,8 +53,8 @@ class Classifier(BaseClassifier):
         while not self.stop_ev.is_set():
             metadata, frame = self.input_queue.get()
             if self.profiling is True:
-                metadata['ts_va_classify_entry'] = str(round(time.time()*1000))
-                metadata['ts_va_classify_exit'] = str(round(time.time()*1000))
+                metadata['ts_va_classify_entry'] = time.time()*1000
+                metadata['ts_va_classify_exit'] = time.time()*1000
 
             self.output_queue.put((metadata, frame))
             self.log.debug("metadata: {} added to classifier output queue".

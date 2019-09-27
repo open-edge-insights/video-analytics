@@ -98,7 +98,7 @@ class Subscriber:
             while not self.stop_ev.is_set():
                 data = subscriber.recv()
                 if self.profiling is True:
-                    data[0]['ts_va_entry'] = str(round(time.time()*1000))
+                    data[0]['ts_va_entry'] = time.time()*1000
                 self.subscriber_queue.put(data)
 
                 #This sleep required to make sure CPU gets released for other threads

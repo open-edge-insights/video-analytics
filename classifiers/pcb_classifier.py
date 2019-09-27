@@ -184,7 +184,7 @@ class Classifier(BaseClassifier):
             metadata, frame = self.input_queue.get()
             
             if self.profiling is True:
-                metadata['ts_va_classify_entry'] = str(round(time.time()*1000))
+                metadata['ts_va_classify_entry'] = time.time()*1000
 
             # Convert the buffer into np array.
             np_buffer = np.frombuffer(frame, dtype=np.uint8)
@@ -334,7 +334,7 @@ class Classifier(BaseClassifier):
             metadata["defects"] = defect_res
 
             if self.profiling is True:
-                metadata['ts_va_classify_exit'] = str(round(time.time()*1000))
+                metadata['ts_va_classify_exit'] = time.time()*1000
 
             self.output_queue.put((metadata, frame))
             self.log.debug("metadata: {} added to output queue".format(
