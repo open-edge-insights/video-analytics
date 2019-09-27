@@ -102,7 +102,7 @@ class Subscriber:
                 self.subscriber_queue.put(data)
 
                 #This sleep required to make sure CPU gets released for other threads
-                time.sleep(0.001)
+                # time.sleep(0.001)
                 self.log.debug("Subscribed data: {} on topic: {} with " +
                                "config: {}...".format(data[0], topic,
                                                       msgbus_cfg))
