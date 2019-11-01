@@ -8,7 +8,7 @@ ARG EIS_UID
 ARG EIS_USER_NAME
 RUN useradd -r -u ${EIS_UID} -G video ${EIS_USER_NAME}
 
-# Installing dependent python modules
+# Installing dependent python modules - needed by opencv
 COPY va_requirements.txt .
 RUN pip3.6 install -r va_requirements.txt && \
     rm -rf va_requirements.txt
@@ -24,8 +24,6 @@ COPY --from=common /usr/local/lib /usr/local/lib
 COPY --from=common ${GO_WORK_DIR}/common/cmake ./common/cmake
 COPY --from=common ${GO_WORK_DIR}/common/libs ./common/libs
 
-ENV PYTHONPATH ${PYTHONPATH}:.
-
 # Build UDF loader lib
 RUN /bin/bash -c "source /opt/intel/openvino/bin/setupvars.sh && \
      cd ./common/libs/UDFLoader && \
@@ -33,7 +31,6 @@ RUN /bin/bash -c "source /opt/intel/openvino/bin/setupvars.sh && \
      mkdir build && \
      cd build && \
      cmake .. && \
-     make && \
      make install"
 
 # Adding project depedency modules
