@@ -43,7 +43,9 @@ VideoAnalytics::VideoAnalytics() {
     LOG_INFO("App config: %s", va_config);
     config_t* config = json_config_new_from_buffer(va_config);
     if(config == NULL) {
-        throw("Failed to initialize configuration object");
+        const char* err = "Failed to initialize configuration object";
+        LOG_ERROR("%s", err);
+        throw(err);
     }
 
     config_value_t* analytics_value = config->get_config_value(config->cfg,
@@ -94,21 +96,37 @@ void VideoAnalytics::start() {
 
     LOG_INFO_0("Get pub topics from environmental varibales of VA container");
     std::vector<std::string> topics = m_env_config->get_topics_from_env("pub"); 
-    if(topics.size() > 1) {
-        const char* err = "Only one topic is supported";
+    if(topics.size() != 1) {
+        const char* err = "Only one topic is supported. Neither more nor less";
         LOG_ERROR("%s", err);
         throw(err);
     }
     std::string topic_type = "pub";
     config_t* msgbus_config = m_env_config->get_messagebus_config(topics[0],
                                                                   topic_type);
+        if(msgbus_config == NULL) {
+            const char* err = "Failed to get publisher message bus config";
+            LOG_ERROR("%s", err);
+            throw(err);
+        }
     m_publisher = new Publisher(msgbus_config, topics[0], (InputMessageQueue*)m_udf_output_queue);
 
     LOG_INFO_0("Get sub topics from environmental varibales of VA container");
     std::vector<std::string> sub_topics = m_env_config->get_topics_from_env("sub"); 
+    if(sub_topics.size() != 1) {
+        const char* err = "Only one topic is supported. Neither more nor less";
+        LOG_ERROR("%s", err);
+        throw(err);
+    }
     std::string topic_type_sub = "sub";
     config_t* msgbus_config_sub = m_env_config->get_messagebus_config(sub_topics[0],
                                                                       topic_type_sub);
+    if(msgbus_config_sub == NULL) {
+            const char* err = "Failed to get subscriber message bus config";
+            LOG_ERROR("%s", err);
+            throw(err);
+    }
+
     Subscriber<eis::utils::Frame>* m_subscriber = new Subscriber<eis::utils::Frame>(msgbus_config_sub, sub_topics[0], (OutputMessageQueue*)m_udf_input_queue);
 
     m_publisher->start();
