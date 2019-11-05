@@ -59,6 +59,7 @@ endif()
 find_package(OpenCV REQUIRED)
 find_package(EISMsgEnv REQUIRED)
 find_package(EISUtils REQUIRED)
+find_package(EISConfigMgr REQUIRED)
 find_package(EISMessageBus REQUIRED)
 find_package(UDFLoader REQUIRED)
 
@@ -89,8 +90,8 @@ include_directories(
     ${OpenCV_INCLUDE_DIRS}
     ${EISMsgEnv_INCLUDE}
     ${EISUtils_INCLUDE}
-    ${EISMessageBus_INCLUDE}
     ${EISConfigMgr_INCLUDE}
+    ${EISMessageBus_INCLUDE}
     ${UDFLoader_INCLUDE}
     ${safestring_SOURCE_DIR}/include)
 
@@ -103,8 +104,8 @@ target_link_libraries(video-analytics
         ${OpenCV_LIBS}
         ${EISUtils_LIBRARIES}
         ${EISMsgEnv_LIBRARIES}
+        eisconfigmgr
         ${EISMessageBus_LIBRARIES}
-        ${EISConfigMgr_LIBRARIES}
         ${UDFLoader_LIBRARIES}
     PRIVATE
         ${ZMQ_LIBRARIES}

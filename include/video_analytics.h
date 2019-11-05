@@ -39,20 +39,18 @@
 #include <eis/utils/json_config.h>
 #include <eis/utils/frame.h>
 #include <eis/msgbus/msgbus.h>
-#include <eis/utils/env_config.h>
+#include <eis/config_manager/env_config.h>
 #include <eis/config_manager/config_manager.h>
 
 using namespace eis::utils;
 using namespace eis::udf;
+using namespace eis::config_manager;
 
-namespace eis
-{
-	namespace va
-    {
-        
+namespace eis {
+	namespace va {
+
         // VideoAnalytics class
-        class VideoAnalytics
-        {
+        class VideoAnalytics {
 
             //App name value read from compose file
             std::string m_app_name;
