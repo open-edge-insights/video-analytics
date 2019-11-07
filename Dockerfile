@@ -24,14 +24,27 @@ COPY --from=common /usr/local/lib /usr/local/lib
 COPY --from=common ${GO_WORK_DIR}/common/cmake ./common/cmake
 COPY --from=common ${GO_WORK_DIR}/common/libs ./common/libs
 
+ARG CMAKE_BUILD_TYPE
 # Build UDF loader lib
 RUN /bin/bash -c "source /opt/intel/openvino/bin/setupvars.sh && \
      cd ./common/libs/UDFLoader && \
      rm -rf build && \
      mkdir build && \
      cd build && \
-     cmake .. && \
+     cmake -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} .. && \
      make install"
+
+COPY --from=common ${GO_WORK_DIR}/common/udfs ./common/udfs
+# Build UDF samples
+RUN /bin/bash -c "source /opt/intel/openvino/bin/setupvars.sh && \
+    cd ./common/udfs/native && \
+    rm -rf build && \
+    mkdir build && \
+    cd build && \
+    cmake -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} .. && \
+    make"
+
+ENV LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${GO_WORK_DIR}/common/udfs/native/build/dummy
 
 # Adding project depedency modules
 COPY . ./VideoAnalytics/
@@ -45,7 +58,7 @@ RUN /bin/bash -c "source /opt/intel/openvino/bin/setupvars.sh && \
     rm -rf build && \
     mkdir build && \
     cd build && \
-    cmake .. && \
+    cmake -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} .. && \
     make"
 
 ENTRYPOINT ["VideoAnalytics/va_start.sh"]

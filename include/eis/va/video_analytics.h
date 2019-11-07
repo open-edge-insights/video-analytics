@@ -20,7 +20,7 @@
 
 /**
  * @file
- * @brief Base class VideoAnalytics
+ * @brief VideoAnalytics interface
  */
 
 #ifndef _EIS_VA_VIDEOANALYTICS_H
@@ -40,6 +40,7 @@
 #include <eis/utils/frame.h>
 #include <eis/msgbus/msgbus.h>
 #include <eis/config_manager/env_config.h>
+#include <eis/udf/udf_manager.h>
 #include <eis/config_manager/config_manager.h>
 
 using namespace eis::utils;
@@ -62,10 +63,13 @@ namespace eis {
             config_mgr_t* m_config_mgr_client;
 
             // Classifier configuration object
-            config_t* m_udf_cfg;
+            config_t* m_config;
+
+            // flag to check if `udfs` key exists in config
+            bool m_udfs_key_exists;
 
             // EIS UDFManager
-            // UDFLoader::UdfManager* m_udf_manager;
+            UdfManager* m_udf_manager;
 
             // UDF input queue
             FrameQueue* m_udf_input_queue;
@@ -78,11 +82,6 @@ namespace eis {
 
             // EIS MsgBus Subscriber
             msgbus::Subscriber<eis::utils::Frame>* m_subscriber;
-
-            /**
-             * Frees up the dynamically allotted memory
-             */
-            void cleanup();
 
         public:
             //Constructor
@@ -99,7 +98,7 @@ namespace eis {
             void stop();
 
         };
-    };
-};
+    }
+}
 
 #endif
