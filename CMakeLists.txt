@@ -18,7 +18,7 @@
 # FROM,OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.12)
 project(video-analytics)
 
 # Define CMake options
@@ -27,15 +27,12 @@ option(WITH_PROFILE "Compile in profiling mode" OFF)
 # Globals
 set(EIS_COMMON_CMAKE "${CMAKE_CURRENT_SOURCE_DIR}/../common/cmake")
 
-# Set C standard to C11
-set(CMAKE_C_STANDARD 11)
-
 # Set C++ flags
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_FLAGS "-Wall -std=c++11")
+set(CMAKE_CXX_STANDARD 14)
 
-# Set CFLAGS
+# Set CFLAGS for C/C++
 set(CMAKE_C_FLAGS "-fPIE -fPIC -O2 -Wall -pedantic -fstack-protector-strong -D_FORTIFY_SOURCE=2")
+set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS}")
 
 # Set LDFLAGS
 set(CMAKE_SHARED_LINKER_FLAGS "-z noexecstack -z relro -z now")

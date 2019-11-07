@@ -17,9 +17,14 @@
 // FROM,OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
-#include <iostream>
-#include "video_analytics.h"
-#include <string>
+
+/**
+ * @file
+ * @brief VideoAnalytics main program
+ */
+
+#include <unistd.h>
+#include "eis/va/video_analytics.h"
 
 using namespace eis::va;
 using namespace eis::utils;
@@ -28,26 +33,34 @@ void usage(const char* name) {
     printf("usage: %s [-h|--help]\n", name);
 }
 
-int main(int argc, char** argv)
-{
-    // Initialize log level default
-    set_log_level(LOG_LVL_INFO);
-
+int main(int argc, char** argv) {
     VideoAnalytics* va = NULL;
     try {
         if(argc >= 2) {
-            LOG_ERROR("Usage: %s [-h|--help] \n",argv[0]);
+            log_lvl_t log_level = LOG_LVL_ERROR; // default log level is `ERROR`
+            if(strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0) {
+                usage(argv[0]);
+            } else if(strcmp(argv[1], "DEBUG") == 0) {
+                log_level = LOG_LVL_DEBUG;
+            } else if(strcmp(argv[1], "INFO") == 0) {
+                log_level = LOG_LVL_INFO;
+            } else if(strcmp(argv[1], "WARN") == 0) {
+                log_level = LOG_LVL_WARN;
+            }
+            set_log_level(log_level);
         }
         va = new VideoAnalytics();
         va->start();
+        while(1) {
+            usleep(2);
+        }
     }
     catch(const std::exception& e) {
         LOG_ERROR("Exception occurred: %s", e.what());
-        va->stop();
+        delete va;
         return -1;
     }
     return 0;
-    
 }
 
 
