@@ -57,18 +57,6 @@ namespace eis {
             //App name value read from compose file
             std::string m_app_name;
 
-            // Env config
-            EnvConfig* m_env_config;
-
-            // ConfigManager client
-            config_mgr_t* m_config_mgr_client;
-
-            // Classifier configuration object
-            config_t* m_config;
-
-            // flag to check if `udfs` key exists in config
-            bool m_udfs_key_exists;
-
             // EIS UDFManager
             UdfManager* m_udf_manager;
 
@@ -88,8 +76,17 @@ namespace eis {
             msgbus::Subscriber<eis::utils::Frame>* m_subscriber;
 
         public:
-            //Constructor
-            VideoAnalytics(std::condition_variable& err_cv);
+            /**
+             * Constructor
+             *
+             * \note The environmental configuration memory is not managed
+             *      by this object. It is managed by the caller.
+             *
+             * @param err_cv     - Error condition variable
+             * @param env_config - Environmental configuration
+             */
+            VideoAnalytics(
+                    std::condition_variable& err_cv, EnvConfig* env_config);
 
             //Destructor
             ~VideoAnalytics();
