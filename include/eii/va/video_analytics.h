@@ -32,6 +32,7 @@
 #include <memory>
 #include <exception>
 #include <vector>
+#include <condition_variable>
 #include <eis/utils/thread_safe_queue.h>
 #include <eis/utils/logger.h>
 #include <eis/udf/udf_manager.h>
@@ -77,6 +78,9 @@ namespace eis {
             // UDF output queue
             FrameQueue* m_udf_output_queue;
 
+            // Error condition variable
+            std::condition_variable& m_err_cv;
+
             // EIS MsgBus Publisher
             msgbus::Publisher* m_publisher;
 
@@ -85,13 +89,13 @@ namespace eis {
 
         public:
             //Constructor
-            VideoAnalytics();
+            VideoAnalytics(std::condition_variable& err_cv);
 
             //Destructor
-            ~ VideoAnalytics();
+            ~VideoAnalytics();
 
             // Has the actual flow as given in the sequence diagram
-            // Start the VA pipeline in order of Publisher, UDFManager, Subscriber 
+            // Start the VA pipeline in order of Publisher, UDFManager, Subscriber
             void start();
 
             // stop the Video Analytics
