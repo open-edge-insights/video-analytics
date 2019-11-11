@@ -32,8 +32,9 @@ using namespace eis::va;
 using namespace eis::utils;
 using namespace eis::msgbus;
 
-VideoAnalytics::VideoAnalytics() {
-
+VideoAnalytics::VideoAnalytics(std::condition_variable& err_cv) :
+    m_err_cv(err_cv)
+{
     LOG_INFO_0("Fetching config");
 
     m_app_name = getenv("AppName");
@@ -96,7 +97,7 @@ void VideoAnalytics::start() {
             LOG_ERROR("%s", err);
             throw(err);
         }
-    m_publisher = new Publisher(msgbus_config, topics[0], (MessageQueue*)m_udf_output_queue);
+    m_publisher = new Publisher(msgbus_config, m_err_cv, topics[0], (MessageQueue*)m_udf_output_queue);
 
     LOG_INFO_0("Get sub topics from environmental varibales of VA container");
     std::vector<std::string> sub_topics = m_env_config->get_topics_from_env("sub");
@@ -114,7 +115,7 @@ void VideoAnalytics::start() {
             throw(err);
     }
 
-    Subscriber<eis::utils::Frame>* m_subscriber = new Subscriber<eis::utils::Frame>(msgbus_config_sub, sub_topics[0], (MessageQueue*)m_udf_input_queue);
+    Subscriber<eis::utils::Frame>* m_subscriber = new Subscriber<eis::utils::Frame>(msgbus_config_sub, m_err_cv, sub_topics[0], (MessageQueue*)m_udf_input_queue);
 
     m_publisher->start();
     LOG_INFO_0("Publisher thread started...");

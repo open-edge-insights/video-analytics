@@ -24,6 +24,7 @@
  */
 
 #include <unistd.h>
+#include <condition_variable>
 #include "eis/va/video_analytics.h"
 
 using namespace eis::va;
@@ -49,7 +50,8 @@ int main(int argc, char** argv) {
             }
             set_log_level(log_level);
         }
-        va = new VideoAnalytics();
+        std::condition_variable err_cv;
+        va = new VideoAnalytics(err_cv);
         va->start();
         while(1) {
             usleep(2);
