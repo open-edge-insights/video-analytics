@@ -35,7 +35,9 @@ void usage(const char* name) {
 }
 
 int main(int argc, char** argv) {
+    EnvConfig* config = new EnvConfig();
     VideoAnalytics* va = NULL;
+
     try {
         if(argc >= 2) {
             log_lvl_t log_level = LOG_LVL_ERROR; // default log level is `ERROR`
@@ -51,17 +53,21 @@ int main(int argc, char** argv) {
             set_log_level(log_level);
         }
         std::condition_variable err_cv;
-        va = new VideoAnalytics(err_cv);
+        va = new VideoAnalytics(err_cv, config);
         va->start();
         while(1) {
             usleep(2);
         }
-    }
-    catch(const std::exception& e) {
+
+        delete va;
+        delete config;
+    } catch(const std::exception& e) {
         LOG_ERROR("Exception occurred: %s", e.what());
         delete va;
+        delete config;
         return -1;
     }
+
     return 0;
 }
 
