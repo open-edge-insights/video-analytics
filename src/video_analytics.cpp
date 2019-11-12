@@ -100,7 +100,7 @@ VideoAnalytics::VideoAnalytics(
     if(topics.size() != 1) {
         const char* err = "Only one topic is supported. Neither more nor less";
         LOG_ERROR("%s", err);
-        config_destory(config);
+        config_destroy(config);
         throw(err);
     }
 
@@ -110,7 +110,7 @@ VideoAnalytics::VideoAnalytics(
     if(pub_config == NULL) {
         const char* err = "Failed to get publisher message bus config";
         LOG_ERROR("%s", err);
-        config_destory(config);
+        config_destroy(config);
         throw(err);
     }
 
