@@ -35,7 +35,7 @@ RUN /bin/bash -c "source /opt/intel/openvino/bin/setupvars.sh && \
      make install"
 
 COPY --from=common ${GO_WORK_DIR}/common/udfs ./common/udfs
-# Build UDF samples
+# Build native UDF samples
 RUN /bin/bash -c "source /opt/intel/openvino/bin/setupvars.sh && \
     cd ./common/udfs/native && \
     rm -rf build && \
@@ -51,7 +51,6 @@ COPY . ./VideoAnalytics/
 
 RUN chmod +x ./VideoAnalytics/va_classifier_start.sh
 RUN chmod +x ./VideoAnalytics/va_start.sh
-# RUN apt-get install -y libc6-dbg gdb valgrind
 
 RUN /bin/bash -c "source /opt/intel/openvino/bin/setupvars.sh && \
     cd ./VideoAnalytics && \
@@ -61,11 +60,13 @@ RUN /bin/bash -c "source /opt/intel/openvino/bin/setupvars.sh && \
     cmake -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} .. && \
     make"
 
-#Removing build dependencies
+# Removing build dependencies
 RUN apt-get remove -y wget && \
     apt-get remove -y git && \
     apt-get remove curl && \
     apt-get autoremove -y
+
+ENV PYTHONPATH ${PYTHONPATH}:${GO_WORK_DIR}/common/udfs/python
 
 ENTRYPOINT ["VideoAnalytics/va_start.sh"]
 
