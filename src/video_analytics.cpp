@@ -24,7 +24,6 @@
 
 #include "eis/va/video_analytics.h"
 
-#define MAX_CONFIG_KEY_LENGTH 40
 #define DEFAULT_QUEUE_SIZE 10
 
 using namespace eis::va;
@@ -32,21 +31,9 @@ using namespace eis::utils;
 using namespace eis::msgbus;
 
 VideoAnalytics::VideoAnalytics(
-        std::condition_variable& err_cv, EnvConfig* env_config) :
+        std::condition_variable& err_cv, EnvConfig* env_config, char* va_config) :
     m_err_cv(err_cv)
 {
-    LOG_DEBUG_0("Fetching config");
-
-    m_app_name = getenv("AppName");
-    config_mgr_t* config_mgr = env_config->get_config_mgr_client();
-
-    // Get the configuration from the configuration manager
-    char config_key[MAX_CONFIG_KEY_LENGTH];
-    sprintf(config_key, "/%s/config", m_app_name.c_str());
-    const char* va_config = config_mgr->get_config(config_key);
-
-    LOG_DEBUG("App config: %s", va_config);
-
     // Parse the configuration
     config_t* config = json_config_new_from_buffer(va_config);
     if(config == NULL) {

@@ -54,9 +54,6 @@ namespace eis {
         // VideoAnalytics class
         class VideoAnalytics {
 
-            //App name value read from compose file
-            std::string m_app_name;
-
             // EIS UDFManager
             UdfManager* m_udf_manager;
 
@@ -84,9 +81,10 @@ namespace eis {
              *
              * @param err_cv     - Error condition variable
              * @param env_config - Environmental configuration
+             * @param va_config  - VideoAnalytics config
              */
             VideoAnalytics(
-                    std::condition_variable& err_cv, EnvConfig* env_config);
+                    std::condition_variable& err_cv, EnvConfig* env_config, char* va_config);
 
             //Destructor
             ~VideoAnalytics();
