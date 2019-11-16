@@ -128,7 +128,7 @@ VideoAnalytics::VideoAnalytics(
             config, m_udf_input_queue, m_udf_output_queue);
 
     // Initialize subscriber
-    m_subscriber = new Subscriber<eis::utils::Frame>(
+    m_subscriber = new Subscriber<eis::udf::Frame>(
             msgbus_config_sub, m_err_cv, sub_topics[0],
             (MessageQueue*) m_udf_input_queue);
 }

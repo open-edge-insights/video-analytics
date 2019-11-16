@@ -38,7 +38,7 @@
 #include <eis/udf/udf_manager.h>
 #include <eis/utils/config.h>
 #include <eis/utils/json_config.h>
-#include <eis/utils/frame.h>
+#include <eis/udf/frame.h>
 #include <eis/msgbus/msgbus.h>
 #include <eis/config_manager/env_config.h>
 #include <eis/udf/udf_manager.h>
@@ -73,7 +73,7 @@ namespace eis {
             msgbus::Publisher* m_publisher;
 
             // EIS MsgBus Subscriber
-            msgbus::Subscriber<eis::utils::Frame>* m_subscriber;
+            msgbus::Subscriber<eis::udf::Frame>* m_subscriber;
 
         public:
             /**
