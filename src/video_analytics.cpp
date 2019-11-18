@@ -32,7 +32,7 @@ using namespace eis::msgbus;
 
 VideoAnalytics::VideoAnalytics(
         std::condition_variable& err_cv, EnvConfig* env_config, char* va_config) :
-    m_err_cv(err_cv)
+    m_err_cv(err_cv), m_enc_type(EncodeType::NONE), m_enc_lvl(0)
 {
     // Parse the configuration
     config_t* config = json_config_new_from_buffer(va_config);
@@ -40,6 +40,52 @@ VideoAnalytics::VideoAnalytics(
         const char* err = "Failed to initialize configuration object";
         LOG_ERROR("%s", err);
         throw(err);
+    }
+
+    config_value_t* encoding_value = config->get_config_value(config->cfg,
+                                                              "encoding");
+    if(encoding_value == NULL) {
+        const char* err = "\"encoding\" key is missing";
+        LOG_WARN("%s", err);
+    } else {
+        config_value_t* encoding_type_cvt = config_value_object_get(encoding_value,
+                                                                    "type");
+        if(encoding_type_cvt == NULL) {
+            const char* err = "encoding \"type\" key missing";
+            LOG_ERROR("%s", err);
+            config_destroy(config);
+            throw(err);
+        }
+        if(encoding_type_cvt->type != CVT_STRING) {
+            const char* err = "encoding \"type\" value has to be of string type";
+            LOG_ERROR("%s", err);
+            config_destroy(config);
+            config_value_destroy(encoding_type_cvt);
+            throw(err);
+        }
+        char* enc_type = encoding_type_cvt->body.string;
+        if(strcmp(enc_type, "jpeg") == 0) {
+            m_enc_type = EncodeType::JPEG;
+        } else if(strcmp(enc_type, "png") == 0) {
+            m_enc_type = EncodeType::PNG;
+        }
+
+        config_value_t* encoding_level_cvt = config_value_object_get(encoding_value,
+                                                                    "level");
+        if(encoding_level_cvt == NULL) {
+            const char* err = "encoding \"level\" key missing";
+            LOG_ERROR("%s", err);
+            config_destroy(config);
+            throw(err);
+        }
+        if(encoding_level_cvt->type != CVT_INTEGER) {
+            const char* err = "encoding \"level\" value has to be of string type";
+            LOG_ERROR("%s", err);
+            config_destroy(config);
+            config_value_destroy(encoding_level_cvt);
+            throw(err);
+        }
+        m_enc_lvl = encoding_level_cvt->body.integer;
     }
 
     // Get queue size configuration

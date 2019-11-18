@@ -72,6 +72,10 @@ namespace eis {
             // EIS MsgBus Subscriber
             msgbus::Subscriber<eis::udf::Frame>* m_subscriber;
 
+            // Encoding details
+            EncodeType m_enc_type;
+            int m_enc_lvl;
+
         public:
             /**
              * Constructor
