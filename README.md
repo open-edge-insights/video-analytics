@@ -25,14 +25,20 @@ If `AppName` is `VideoAnalytics`, then the app's config would look like as below
  for `/VideoAnalytics/config` key in Etcd:
  ```
     {
-        "name": "pcb_classifier",
         "queue_size": 10,
-        "max_workers": 1,
-        "ref_img": "./VideoAnalytics/classifiers/ref_pcbdemo/ref.png",
-        "ref_config_roi": "./VideoAnalytics/classifiers/ref_pcbdemo/roi_2.json",
-        "model_xml": "./VideoAnalytics/classifiers/ref_pcbdemo/model_2.xml",
-        "model_bin": "./VideoAnalytics/classifiers/ref_pcbdemo/model_2.bin",
-        "device": "CPU""
+        "max_jobs": 1,
+        "name": "pcb.pcb_classifier",
+        "udfs": [
+            {
+                "name": "pcb.pcb_classifier",
+                "type": "python",
+                "ref_img": "common/udfs/python/pcb/ref/ref.png",
+                "ref_config_roi": "common/udfs/python/pcb/ref/roi_2.json",
+                "model_xml": "common/udfs/python/pcb/ref/model_2.xml",
+                "model_bin": "common/udfs/python/pcb/ref/model_2.bin",
+                "device": "CPU""
+            }
+        ]
     }
  ```
 For more details on Etcd and MessageBus endpoint configuration, visit [Etcd_and_MsgBus_Endpoint_Configuration](../Etcd_and_MsgBus_Endpoint_Configuration.md).
@@ -46,16 +52,23 @@ Sample configuration for classifiers used:
 
 1. **PCB classifier** (has to be used with `PCB Filter`)
    ```
-   {
-        "name": "pcb_classifier",
+    {
         "queue_size": 10,
-        "max_workers": 1,
-        "ref_img": "./VideoAnalytics/classifiers/ref_pcbdemo/ref.png",
-        "ref_config_roi": "./VideoAnalytics/classifiers/ref_pcbdemo/roi_2.json",
-        "model_xml": "./VideoAnalytics/classifiers/ref_pcbdemo/model_2.xml",
-        "model_bin": "./VideoAnalytics/classifiers/ref_pcbdemo/model_2.bin",
-        "device": "CPU"
+        "max_jobs": 1,
+        "name": "pcb.pcb_classifier",
+        "udfs": [
+            {
+                "name": "pcb.pcb_classifier",
+                "type": "python",
+                "ref_img": "common/udfs/python/pcb/ref/ref.png",
+                "ref_config_roi": "common/udfs/python/pcb/ref/roi_2.json",
+                "model_xml": "common/udfs/python/pcb/ref/model_2.xml",
+                "model_bin": "common/udfs/python/pcb/ref/model_2.bin",
+                "device": "CPU""
+            }
+        ]
     }
+    
     ```
 
     ----
@@ -65,83 +78,38 @@ Sample configuration for classifiers used:
     "MYRIAD", please use the below config where the model_xml and model_bin
     files are different. Please set the "device" value appropriately based on
     the device used for inferencing.
-      ```
-      {
-          "name": "pcb_classifier",
-          "queue_size": 10,
-          "max_workers": 1,
-          "ref_img": "./VideoAnalytics/classifiers/ref_pcbdemo/ref.png",
-          "ref_config_roi": "./VideoAnalytics/classifiers/ref_pcbdemo/roi_1.json",
-          "model_xml": "./VideoAnalytics/classifiers/ref_pcbdemo/pcb_fp16.xml",
-          "model_bin": "./VideoAnalytics/classifiers/ref_pcbdemo/pcb_fp16.bin",
-          "device": "HDDL"
-      }
-      ```
+    ```
+    "udfs": [
+        {
+            "name": "pcb.pcb_classifier",
+            "type": "python",
+            "device": "HDDL"
+        }
+    ]
+
+    ```
     ----
 
-
-2. **Classification sample classifier** (has to be used with `Bypass Filter`)
+2. **Dummy classifier** (to be used when no classification needs to be done)
    ```
-    {
-        "name": "sample_classification_classifier",
-        "queue_size": 10,
-        "max_workers": 1,
-        "model_xml": "./VideoAnalytics/classifiers/ref_classification/squeezenet1.1_FP32.xml",
-        "model_bin": "./VideoAnalytics/classifiers/ref_classification/squeezenet1.1_FP32.bin",
-        "labels": "./VideoAnalytics/classifiers/ref_classification/squeezenet1.1.labels",
-        "device": "CPU"
+    "udfs": [{
+        "name": "dummy",
+        "type": "native",
     }
    ```
-
-   ----
-    **NOTE**:
-    The above config works for both "CPU" and "GPU" devices after setting
-    appropriate `device` value. If the device in the above config is "HDDL" or
-    "MYRIAD", please use the below config where the model_xml and model_bin files
-    are different. Please set the "device" value appropriately based on the
-    device used for inferencing.
-      ```
-      {
-          "name": "sample_classification_classifier",
-          "queue_size": 10,
-          "max_workers": 1,
-          "model_xml": "./VideoAnalytics/classifiers/ref_classification/squeezenet1.1_FP16.xml",
-          "model_bin": "./VideoAnalytics/classifiers/ref_classification/squeezenet1.1_FP16.bin",
-          "labels": "./VideoAnalytics/classifiers/ref_classification/squeezenet1.1.labels",
-          "device": "HDDL"
-      }
-      ```
-    ----
-
-3. **Dummy classifier** (to be used when no classification needs to be done)
-   ```
-    {
-        "name": "dummy_classifier",
-        "queue_size": 10,
-        "max_workers": 1
-    }
-   ```
-
-**Sample classifiers code**
-
-|  File	                              | Description 	                             | Link  	                                                |
-|---	                              |---	                                         |---	                                                    |
-| base_classifier.py                  | Base class for all classifiers               | [Link](..libs/base_classifier.py)                        |
-| pcb_classifier.py                   | PCB Demo classifier for detecting defects    | [Link](classifiers/pcb_classifier.py)                    |
-| sample_classification_classifier.py | Sample classification classifier             | [Link](classifiers/sample_classification_classifier.py)  |
-| dummy_classifier.py                 | Doesn't do any classification                | [Link](classifiers/dummy_classifier.py)                  |
-
 
 #### `Detailed description on each of the keys used`
 
 |  Key	        | Description 	                                    | Possible Values  	                             | Required/Optional |
 |---	        |---	                                            |---	                                         |---	             |
-|  name 	    |   File name of the classifier	                    |  "pcb_classfier"/"sample_classification_classifier"/"dummy_classifier" |   Required	|
+|  name 	    |   File name of the classifier	                    |  "pcb.pcb_classifier"/"dummy"                  |   Required	     |
+|  type 	    |   type of classifier                              |  "python"/"python"                             |   Required	     |
 |  queue_size 	|   Input and output queue size of classifier       | any number that suits the platform resources	 |  Required	     |
-|  max_workers 	|   Number of threads running classification algo (Not more than 5 * number of cpu cores)	    |   any number that suits the platform resources | Required |
+|  max_workers 	|   Number of threads running classification algo (Not more than 5 * number of cpu cores)	       |   any number that suits the platform resources | Optional(Default: 4) |
 |  model_xml	|  xml file generated from openvino model optimizer | -                                              | Required          |
 |  model_bin	|  bin file generated from openvino model optimizer | -                                              | Required          |
 |  device	    |  device on which the inference occurs             | "CPU"/"GPU"/"HDDL"/"MYRIAD"                    | Required          |
+|  max_jobs     |  number of queued jobs                            | Default value: 20                              | Optional          |
 
 **Note**: The other keys used are specific to classifier usecase
 
