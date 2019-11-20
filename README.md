@@ -98,6 +98,62 @@ Sample configuration for classifiers used:
     }
    ```
 
+3. **Safety Gear Detection Demo**(SGD)
+
+    This is a C++ based UDF which detects safety gear such as safety helmet
+    and safety Jacket in frame. At the same time this model also detects if there
+    is a violation has happened or the worker is safe. There already exist one sample
+    video in the EIS repo to demomstrate the capability of the model.
+
+    Following things need to be altered in order to launch Safety Gear Demo gracefully.
+        1. Alter the config (etcd_preload.jso).
+        2. Alter the docker-compose file's Visualizer section.
+
+    **Config Related Change**
+
+    * Change the ingestor config under VideoIngestion section
+
+        * Here the user is expected to use the ***video file*** related ingestion config as directed in [VideoIngestion README](../VideoIngestion/README.md).
+
+        * In case of Filter configuration user is expected to use dummy filter config by refering to the aforementioned README.
+
+    * The VideoAnalytics section need to be chnaged to add UDF details of safety gear demo. A sample setting is depicted below.
+
+    ```json
+    "udfs": [{
+            "name": "safety_gear_demo",
+            "type": "native",
+            "model_xml": "common/udfs/native/safety_gear_demo/ref/frozen_inference_graph.xml",
+            "model_bin": "common/udfs/native/safety_gear_demo/ref/frozen_inference_graph.bin",
+            "device": "CPU"
+        }]
+
+    NOTE: No other UDFs need to be used along with this config such as dummy UDF or PCB filter UDF etc...
+    ```
+    **Docker-Compose file Change**
+
+    The visualizer section in [docker-compose.yml](../docker_setup/docker-compose.yml) file should be changed in order to process the labels from a specific JSON file. The ***command*** variable in docker-compose.yml file can be chnaged as below:
+
+    Before
+    ```json
+    ia_visualizer:
+    depends_on:
+      - ia_common
+    -----snip-----
+    command: ["pcb_demo_label.json"]
+    -----snip-----
+
+    ```
+    After
+    ```json
+    ia_visualizer:
+    depends_on:
+    - ia_common
+    -----snip-----
+    command: ["safety_demo_label.json"]
+    -----snip-----
+    ```
+
 #### `Detailed description on each of the keys used`
 
 |  Key	        | Description 	                                    | Possible Values  	                             | Required/Optional |
