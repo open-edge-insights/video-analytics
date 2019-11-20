@@ -43,6 +43,24 @@ void usage(const char* name) {
     printf("Usage: %s \n", name);
 }
 
+void signal_callback_handler(int signum){
+    if (signum == SIGTERM){
+        LOG_INFO("Received SIGTERM signal, terminating Video Analytics");
+    }else if(signum == SIGABRT){
+        LOG_INFO("Received SIGABRT signal, terminating Video Analytics");
+    }else if(signum == SIGINT){
+        LOG_INFO("Received Ctrl-C, terminating Video Analytics");
+    }
+    
+    if(g_va) {
+        delete g_va;
+    }
+    if(g_config) {
+        delete g_config;
+    }
+    exit(0);
+}
+
 void va_initialize(char* va_config){
     if(g_va) {
         delete g_va;
@@ -62,6 +80,9 @@ void on_change_config_callback(char* key, char* va_config){
 }
 
 int main(int argc, char** argv) {
+    signal(SIGINT, signal_callback_handler);
+    signal(SIGABRT, signal_callback_handler);
+    signal(SIGTERM, signal_callback_handler);
     config_mgr_t* config_mgr = NULL;
     log_lvl_t log_level = LOG_LVL_ERROR; // default log level is `ERROR`
     try {
