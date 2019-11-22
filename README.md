@@ -129,6 +129,7 @@ Sample configuration for classifiers used:
         }]
 
     NOTE: No other UDFs need to be used along with this config such as dummy UDF or PCB filter UDF etc...
+    NOTE: For testing with MYRIAD or HDDL device, user need to use frozen_inference_graph_fp16.xml & frozen_inference_graph_fp16.bin files from the same path.
     ```
     **Docker-Compose file Change**
 
