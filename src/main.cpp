@@ -51,7 +51,7 @@ void signal_callback_handler(int signum){
     }else if(signum == SIGINT){
         LOG_INFO("Received Ctrl-C, terminating Video Analytics");
     }
-    
+
     if(g_va) {
         delete g_va;
     }
@@ -75,7 +75,10 @@ void va_initialize(char* va_config){
 
 void on_change_config_callback(char* key, char* va_config){
     if(strcmp(g_va_config, va_config)){
-        va_initialize(va_config);
+        // TODO: Dynamic config needs to be enabled later once it works
+        // with python `udfs`
+        // va_initialize(va_config);
+        _Exit(-1);
     }
 }
 
