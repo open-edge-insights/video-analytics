@@ -51,24 +51,18 @@ algorithm on the video frames received from filter.
 Sample configuration for classifiers used:
 
 1. **PCB classifier** (has to be used with `PCB Filter`)
-   ```
-    {
-        "queue_size": 10,
-        "max_jobs": 1,
-        "name": "pcb.pcb_classifier",
-        "udfs": [
-            {
-                "name": "pcb.pcb_classifier",
-                "type": "python",
-                "ref_img": "common/udfs/python/pcb/ref/ref.png",
-                "ref_config_roi": "common/udfs/python/pcb/ref/roi_2.json",
-                "model_xml": "common/udfs/python/pcb/ref/model_2.xml",
-                "model_bin": "common/udfs/python/pcb/ref/model_2.bin",
-                "device": "CPU""
-            }
-        ]
-    }
-    
+    ```
+    "udfs": [
+        {
+            "name": "pcb.pcb_classifier",
+            "type": "python",
+            "ref_img": "common/udfs/python/pcb/ref/ref.png",
+            "ref_config_roi": "common/udfs/python/pcb/ref/roi_2.json",
+            "model_xml": "common/udfs/python/pcb/ref/model_2.xml",
+            "model_bin": "common/udfs/python/pcb/ref/model_2.bin",
+            "device": "CPU""
+        }
+    ]
     ```
 
     ----
@@ -83,6 +77,10 @@ Sample configuration for classifiers used:
         {
             "name": "pcb.pcb_classifier",
             "type": "python",
+            "ref_img": "common/udfs/python/pcb/ref/ref.png",
+            "ref_config_roi": "common/udfs/python/pcb/ref/roi_1.json",
+            "model_xml": "common/udfs/python/pcb/ref/pcb_fp16.xml",
+            "model_bin": "common/udfs/python/pcb/ref/pcb_fp16.bin",
             "device": "HDDL"
         }
     ]
@@ -102,22 +100,19 @@ Sample configuration for classifiers used:
 
     This is a C++ based UDF which detects safety gear such as safety helmet
     and safety Jacket in frame. At the same time this model also detects if there
-    is a violation has happened or the worker is safe. There already exist one sample
-    video in the EIS repo to demomstrate the capability of the model.
+    is a violation has happened.
 
-    Following things need to be altered in order to launch Safety Gear Demo gracefully.
-        1. Alter the config (etcd_preload.jso).
-        2. Alter the docker-compose file's Visualizer section.
-
-    **Config Related Change**
-
-    * Change the ingestor config under VideoIngestion section
-
-        * Here the user is expected to use the ***video file*** related ingestion config as directed in [VideoIngestion README](../VideoIngestion/README.md).
-
-        * In case of Filter configuration user is expected to use dummy filter config by refering to the aforementioned README.
-
-    * The VideoAnalytics section need to be chnaged to add UDF details of safety gear demo. A sample setting is depicted below.
+    ----
+    **NOTE**:
+    * For more details, refer [VideoIngestion/README.md](../VideoIngestion/README.md)
+      * Please use `./test_videos/Safety_Full_Hat_and_Vest.mp4` video file with the
+        opencv/gstreamer ingestor.
+      * Please use `dummy` UDF filter configuration
+    * Refer `Using Labels` section [Visualizer/README.md](../Visualizer/README.md) to pass
+      the respective json file as command line argument to see the visualized data
+    * For testing with MYRIAD or HDDL device, user need to use frozen_inference_graph_fp16.xml
+      & frozen_inference_graph_fp16.bin files from the same path.
+    ----
 
     ```json
     "udfs": [{
@@ -127,46 +122,21 @@ Sample configuration for classifiers used:
             "model_bin": "common/udfs/native/safety_gear_demo/ref/frozen_inference_graph.bin",
             "device": "CPU"
         }]
-
-    NOTE: No other UDFs need to be used along with this config such as dummy UDF or PCB filter UDF etc...
-    NOTE: For testing with MYRIAD or HDDL device, user need to use frozen_inference_graph_fp16.xml & frozen_inference_graph_fp16.bin files from the same path.
-    ```
-    **Docker-Compose file Change**
-
-    The visualizer section in [docker-compose.yml](../docker_setup/docker-compose.yml) file should be changed in order to process the labels from a specific JSON file. The ***command*** variable in docker-compose.yml file can be chnaged as below:
-
-    Before
-    ```json
-    ia_visualizer:
-    depends_on:
-      - ia_common
-    -----snip-----
-    command: ["pcb_demo_label.json"]
-    -----snip-----
-
-    ```
-    After
-    ```json
-    ia_visualizer:
-    depends_on:
-    - ia_common
-    -----snip-----
-    command: ["safety_demo_label.json"]
-    -----snip-----
     ```
 
 #### `Detailed description on each of the keys used`
 
 |  Key	        | Description 	                                    | Possible Values  	                             | Required/Optional |
 |---	        |---	                                            |---	                                         |---	             |
-|  name 	    |   File name of the classifier	                    |  "pcb.pcb_classifier"/"dummy"                  |   Required	     |
-|  type 	    |   type of classifier                              |  "python"/"python"                             |   Required	     |
-|  queue_size 	|   Input and output queue size of classifier       | any number that suits the platform resources	 |  Required	     |
-|  max_workers 	|   Number of threads running classification algo (Not more than 5 * number of cpu cores)	       |   any number that suits the platform resources | Optional(Default: 4) |
-|  model_xml	|  xml file generated from openvino model optimizer | -                                              | Required          |
-|  model_bin	|  bin file generated from openvino model optimizer | -                                              | Required          |
-|  device	    |  device on which the inference occurs             | "CPU"/"GPU"/"HDDL"/"MYRIAD"                    | Required          |
-|  max_jobs     |  number of queued jobs                            | Default value: 20                              | Optional          |
+|  name 	    |  UDF classifier name                              |  "pcb.pcb_classifier"/"dummy"                  |   Required	     |
+|  type 	    |  UDF classifier type                              |  "python"/"native"                             |   Required	     |
+|  queue_size 	|  Input and output queue size of classifier        |  any number that suits the platform resources	 |   Required	     |
+|  device	    |  Device on which the inference occurs             | "CPU"/"GPU"/"HDDL"/"MYRIAD"                    |   Required        |
+|  max_jobs     |  Number of queued jobs                            |  Default value: 20                             |   Optional        |
+|  max_workers 	|  Number of threads acting on queued jobs          |  Default value: 4                              |   Optional        |
+|  model_xml	|  xml file generated from openvino model optimizer |  file in .xml format                           |   Optional        |
+|  model_bin	|  bin file generated from openvino model optimizer |  file in .bin format                           |   Optional        |
+
 
 **Note**: The other keys used are specific to classifier usecase
 
