@@ -88,7 +88,11 @@ VideoAnalytics::VideoAnalytics(
             throw(err);
         }
         m_enc_lvl = encoding_level_cvt->body.integer;
+        config_value_destroy(encoding_level_cvt);
+        config_value_destroy(encoding_type_cvt);
+        
     }
+    config_value_destroy(encoding_value);
 
     // Get queue size configuration
     config_value_t* queue_cvt = config->get_config_value(
@@ -108,6 +112,7 @@ VideoAnalytics::VideoAnalytics(
 
         queue_size = queue_cvt->body.integer;
     }
+    config_value_destroy(queue_cvt);
 
     // Get configuration values for the subscriber
     LOG_DEBUG_0("Parsing VA subscription topics");
@@ -209,6 +214,7 @@ void VideoAnalytics::start() {
 
     m_subscriber->start();
     LOG_INFO_0("Subscriber thread started...");
+
 }
 
 void VideoAnalytics::stop() {
