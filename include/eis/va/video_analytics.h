@@ -43,6 +43,7 @@
 #include <eis/config_manager/env_config.h>
 #include <eis/udf/udf_manager.h>
 #include <eis/config_manager/config_manager.h>
+#include <eis/config_manager/config.h>
 
 using namespace eis::utils;
 using namespace eis::udf;
@@ -88,7 +89,7 @@ namespace eis {
              * @param va_config  - VideoAnalytics config
              */
             VideoAnalytics(
-                    std::condition_variable& err_cv, EnvConfig* env_config, char* va_config);
+                    std::condition_variable& err_cv, const env_config_t* env_config, char* va_config, const config_mgr_t* g_config_mgr);
 
             //Destructor
             ~VideoAnalytics();
