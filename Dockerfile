@@ -50,7 +50,6 @@ ENV LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${GO_WORK_DIR}/common/udfs/native/build/d
 COPY . ./VideoAnalytics/
 
 RUN chmod +x ./VideoAnalytics/va_classifier_start.sh
-RUN chmod +x ./VideoAnalytics/va_start.sh
 
 RUN /bin/bash -c "source /opt/intel/openvino/bin/setupvars.sh && \
     cd ./VideoAnalytics && \
@@ -68,5 +67,5 @@ RUN apt-get remove -y wget && \
 
 ENV PYTHONPATH ${PYTHONPATH}:${GO_WORK_DIR}/common/udfs/python
 
-ENTRYPOINT ["VideoAnalytics/va_start.sh"]
+ENTRYPOINT ["VideoAnalytics/va_classifier_start.sh"]
 
