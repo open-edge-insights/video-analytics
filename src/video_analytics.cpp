@@ -25,13 +25,15 @@
 #include "eis/va/video_analytics.h"
 
 #define DEFAULT_QUEUE_SIZE 10
+#define PUB "pub"
+#define SUB "sub"
 
 using namespace eis::va;
 using namespace eis::utils;
 using namespace eis::msgbus;
 
 VideoAnalytics::VideoAnalytics(
-        std::condition_variable& err_cv, EnvConfig* env_config, char* va_config) :
+        std::condition_variable& err_cv, const env_config_t* env_config, char* va_config, const config_mgr_t* g_config_mgr) :
     m_err_cv(err_cv), m_enc_type(EncodeType::NONE), m_enc_lvl(0)
 {
     // Parse the configuration
@@ -109,17 +111,27 @@ VideoAnalytics::VideoAnalytics(
 
     // Get configuration values for the subscriber
     LOG_DEBUG_0("Parsing VA subscription topics");
-    std::vector<std::string> sub_topics = env_config->get_topics_from_env("sub");
-    if(sub_topics.size() != 1) {
-        const char* err = "Only one topic is supported. Neither more nor less";
-        LOG_ERROR("%s", err);
-        config_destroy(config);
-        throw(err);
+    
+    char* topic_type_sub = SUB;
+    char** sub_topics = env_config->get_topics_from_env(topic_type_sub);
+
+    int topic_length = 0;
+    while (sub_topics[topic_length] != NULL) {
+        topic_length++;
+        if(topic_length != 1){
+            const char* err = "Only one topic is supported. Neither more, nor less";
+            LOG_ERROR("%s", err);
+            config_destroy(config);
+            config_value_destroy(queue_cvt);
+            throw(err);
+        }
     }
 
-    std::string topic_type_sub = "sub";
-    config_t* msgbus_config_sub = env_config->get_messagebus_config(
+    LOG_DEBUG_0("Successfully read SubTopics env value...");
+    
+    config_t* msgbus_config_sub = env_config->get_messagebus_config(g_config_mgr,
             sub_topics[0], topic_type_sub);
+    
     if(msgbus_config_sub == NULL) {
         const char* err = "Failed to get subscriber message bus config";
         LOG_ERROR("%s", err);
@@ -127,18 +139,36 @@ VideoAnalytics::VideoAnalytics(
         throw(err);
     }
 
-    // Get configuration values for the publisher
-    LOG_DEBUG_0("Parsing VA publisher topics");
-    std::vector<std::string> topics = env_config->get_topics_from_env("pub");
-    if(topics.size() != 1) {
-        const char* err = "Only one topic is supported. Neither more nor less";
-        LOG_ERROR("%s", err);
-        config_destroy(config);
-        throw(err);
+    LOG_DEBUG_0("Subscriber config received...");
+
+    int m = 0;
+    char* individual_topic;
+    char **sub_topic = (char **)malloc(sizeof(char*));
+    while(individual_topic = strtok_r(sub_topics[0], "/", &(sub_topics[0]))){
+        sub_topic[m] = individual_topic;
+        m++;
     }
 
-    std::string topic_type = "pub";
-    config_t* pub_config = env_config->get_messagebus_config(
+    // Get configuration values for the publisher
+    LOG_DEBUG_0("Parsing VA publisher topics");
+    char* topic_type = PUB;
+    char** topics = env_config->get_topics_from_env(topic_type);
+
+    topic_length = 0;
+    while (topics[topic_length] != NULL) {
+        topic_length++;
+        if(topic_length != 1){
+            const char* err = "Only one topic is supported. Neither more, nor less";
+            LOG_ERROR("%s", err);
+            config_destroy(config);
+            config_value_destroy(queue_cvt);
+            throw(err);
+        }
+    }
+
+    LOG_DEBUG_0("Successfully read PubTopics env value...");
+    
+    config_t* pub_config = env_config->get_messagebus_config(g_config_mgr,
             topics[0], topic_type);
     if(pub_config == NULL) {
         const char* err = "Failed to get publisher message bus config";
@@ -146,6 +176,7 @@ VideoAnalytics::VideoAnalytics(
         config_destroy(config);
         throw(err);
     }
+    LOG_DEBUG_0("Publisher Config received...");
 
     // Initialize input and output queues
     m_udf_input_queue = new FrameQueue(queue_size);
@@ -155,15 +186,18 @@ VideoAnalytics::VideoAnalytics(
     m_publisher = new Publisher(
             pub_config, m_err_cv, topics[0],
             (MessageQueue*) m_udf_output_queue);
+    free(topics);
 
     // Initialize UDF Manager
     m_udf_manager = new UdfManager(
             config, m_udf_input_queue, m_udf_output_queue);
 
     // Initialize subscriber
+
     m_subscriber = new Subscriber<eis::udf::Frame>(
-            msgbus_config_sub, m_err_cv, sub_topics[0],
+            msgbus_config_sub, m_err_cv, sub_topic[1],
             (MessageQueue*) m_udf_input_queue);
+    free(sub_topic);
 }
 
 void VideoAnalytics::start() {
