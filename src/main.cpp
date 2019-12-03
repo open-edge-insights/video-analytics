@@ -28,6 +28,7 @@
 #include <condition_variable>
 #include "eis/va/video_analytics.h"
 #include <mutex>
+#include <atomic>
 
 #define MAX_CONFIG_KEY_LENGTH 40
 
@@ -39,7 +40,7 @@ static char* g_va_config = NULL;
 static std::condition_variable g_err_cv;
 static config_mgr_t* g_config_mgr = NULL;
 static env_config_t* g_env_config_client = NULL;
-
+static std::atomic<bool> g_cfg_change;
 
 void get_config_mgr(){
     std::string pub_cert_file = "";
@@ -65,9 +66,8 @@ void get_config_mgr(){
                                  (char*)pub_cert_file.c_str(),
                                  (char*) pri_key_file.c_str(),
                                  (char*) trust_file.c_str());
-                                 
-}
 
+}
 
 void usage(const char* name) {
     printf("Usage: %s \n", name);
@@ -103,10 +103,14 @@ void va_initialize(char* va_config){
 
 void on_change_config_callback(char* key, char* va_config){
     if(strcmp(g_va_config, va_config)){
-        // TODO: Dynamic config needs to be enabled later once it works
-        // with python `udfs`
-        // va_initialize(va_config);
-        _Exit(-1);
+        if(g_va) {
+            delete g_va;
+            g_va = NULL;
+        }
+        delete g_va_config;
+        g_va_config = va_config;
+        g_cfg_change.store(true);
+        g_err_cv.notify_one();
     }
 }
 
@@ -152,7 +156,7 @@ int main(int argc, char** argv) {
 
         std::string m_app_name = getenv("AppName");
 
-        
+
         // Get the configuration from the configuration manager
         char config_key[MAX_CONFIG_KEY_LENGTH];
         sprintf(config_key, "/%s/config", m_app_name.c_str());
@@ -164,8 +168,18 @@ int main(int argc, char** argv) {
         va_initialize(g_va_config);
 
         std::mutex mtx;
-        std::unique_lock<std::mutex> lk(mtx);
-        g_err_cv.wait(lk);
+
+        while(true) {
+            std::unique_lock<std::mutex> lk(mtx);
+            g_err_cv.wait(lk);
+            if(g_cfg_change.load()) {
+                va_initialize(g_va_config);
+                g_cfg_change.store(false);
+            } else {
+                break;
+            }
+        }
+
         clean_up();
     }catch(const std::exception& e) {
         LOG_ERROR("Exception occurred: %s", e.what());
