@@ -40,14 +40,12 @@
 #include <eis/utils/json_config.h>
 #include <eis/udf/frame.h>
 #include <eis/msgbus/msgbus.h>
-#include <eis/config_manager/env_config.h>
 #include <eis/udf/udf_manager.h>
 #include <eis/config_manager/config_manager.h>
-#include <eis/config_manager/config.h>
+#include <eis/config_manager/env_config.h>
 
 using namespace eis::utils;
 using namespace eis::udf;
-using namespace eis::config_manager;
 
 namespace eis {
 	namespace va {

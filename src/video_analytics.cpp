@@ -117,8 +117,7 @@ VideoAnalytics::VideoAnalytics(
     // Get configuration values for the subscriber
     LOG_DEBUG_0("Parsing VA subscription topics");
     
-    char* topic_type_sub = SUB;
-    char** sub_topics = env_config->get_topics_from_env(topic_type_sub);
+    char** sub_topics = env_config->get_topics_from_env(SUB);
 
     int topic_length = 0;
     while (sub_topics[topic_length] != NULL) {
@@ -135,7 +134,7 @@ VideoAnalytics::VideoAnalytics(
     LOG_DEBUG_0("Successfully read SubTopics env value...");
     
     config_t* msgbus_config_sub = env_config->get_messagebus_config(g_config_mgr,
-            sub_topics[0], topic_type_sub);
+            sub_topics[0], SUB);
     
     if(msgbus_config_sub == NULL) {
         const char* err = "Failed to get subscriber message bus config";
@@ -156,8 +155,8 @@ VideoAnalytics::VideoAnalytics(
 
     // Get configuration values for the publisher
     LOG_DEBUG_0("Parsing VA publisher topics");
-    char* topic_type = PUB;
-    char** topics = env_config->get_topics_from_env(topic_type);
+
+    char** topics = env_config->get_topics_from_env(PUB);
 
     topic_length = 0;
     while (topics[topic_length] != NULL) {
@@ -174,7 +173,7 @@ VideoAnalytics::VideoAnalytics(
     LOG_DEBUG_0("Successfully read PubTopics env value...");
     
     config_t* pub_config = env_config->get_messagebus_config(g_config_mgr,
-            topics[0], topic_type);
+            topics[0], PUB);
     if(pub_config == NULL) {
         const char* err = "Failed to get publisher message bus config";
         LOG_ERROR("%s", err);
