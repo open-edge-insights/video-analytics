@@ -29,6 +29,7 @@
 #include "eis/va/video_analytics.h"
 #include <mutex>
 #include <atomic>
+#include <csignal>
 
 #define MAX_CONFIG_KEY_LENGTH 40
 
