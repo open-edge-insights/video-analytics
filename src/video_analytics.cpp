@@ -194,6 +194,14 @@ VideoAnalytics::VideoAnalytics(
             (MessageQueue*) m_udf_output_queue);
     free(topics);
 
+    config_value_t* udf_value = config->get_config_value(config->cfg,
+                                                            "udfs");
+
+    if(udf_value == NULL) {
+        LOG_ERROR("\"udfs\" key doesn't exist, provide atleast one udf")
+        exit(-1);
+    }
+
     // Initialize UDF Manager
     m_udf_manager = new UdfManager(
             config, m_udf_input_queue, m_udf_output_queue);
