@@ -145,12 +145,14 @@ VideoAnalytics::VideoAnalytics(
 
     LOG_DEBUG_0("Subscriber config received...");
 
-    int m = 0;
-    char* individual_topic;
-    char **sub_topic = (char **)malloc(sizeof(char*));
-    while(individual_topic = strtok_r(sub_topics[0], "/", &(sub_topics[0]))){
-        sub_topic[m] = individual_topic;
-        m++;
+    char* temp;
+    char* sub_topic;
+    temp = strtok_r(sub_topics[0], "/", &sub_topics[0]);
+    sub_topic = strtok_r(sub_topics[0], "/", &sub_topics[0]);
+    if(sub_topic == NULL) {
+        const char* err = "Subtopic provided is invalid";
+        LOG_ERROR("%s", err);
+        throw(err);
     }
 
     // Get configuration values for the publisher
@@ -197,34 +199,52 @@ VideoAnalytics::VideoAnalytics(
             config, m_udf_input_queue, m_udf_output_queue);
 
     // Initialize subscriber
-
     m_subscriber = new Subscriber<eis::udf::Frame>(
-            msgbus_config_sub, m_err_cv, sub_topic[1],
-            (MessageQueue*) m_udf_input_queue);
-    free(sub_topic);
+        msgbus_config_sub, m_err_cv, sub_topic,
+        (MessageQueue*) m_udf_input_queue);
+    
 }
 
 void VideoAnalytics::start() {
-    m_publisher->start();
-    LOG_INFO_0("Publisher thread started...");
 
-    m_udf_manager->start();
+    if(m_publisher) {
+        m_publisher->start();
+    }
+    LOG_INFO_0("Publisher thread started...");
+    
+    if(m_udf_manager) {
+        m_udf_manager->start();
+    }
     LOG_INFO_0("Started udf manager");
 
-    m_subscriber->start();
+    if(m_subscriber) {
+        m_subscriber->start();
+    }
     LOG_INFO_0("Subscriber thread started...");
 
 }
 
 void VideoAnalytics::stop() {
-    m_subscriber->stop();
-    m_udf_manager->stop();
-    m_publisher->stop();
+    if(m_subscriber) {
+        m_subscriber->stop();
+    }
+    if(m_udf_manager) {
+        m_udf_manager->stop();
+    }
+    if(m_publisher) {
+        m_publisher->stop();
+    }
 }
 
 VideoAnalytics::~VideoAnalytics() {
     // NOTE: stop() methods are automatically called in all destructors
-    delete m_subscriber;
-    delete m_udf_manager;
-    delete m_publisher;
+    if(m_subscriber) {
+        delete m_subscriber;
+    }
+    if(m_udf_manager) {
+        delete m_udf_manager;
+    }
+    if(m_publisher) {
+        delete m_publisher;
+    }
 }
