@@ -51,7 +51,8 @@ algorithm on the video frames received from filter.
 Sample configuration for classifiers used:
 
 1. **PCB classifier** (has to be used with `PCB Filter`)
-    ```
+   
+    ```javascript
     "udfs": [
         {
             "name": "pcb.pcb_classifier",
@@ -65,31 +66,9 @@ Sample configuration for classifiers used:
     ]
     ```
 
-    ----
-    **NOTE**:
-    The above config works for both "CPU" and "GPU" devices after setting
-    appropriate `device` value. If the device in the above config is "HDDL" or
-    "MYRIAD", please use the below config where the model_xml and model_bin
-    files are different. Please set the "device" value appropriately based on
-    the device used for inferencing.
-    ```
-    "udfs": [
-        {
-            "name": "pcb.pcb_classifier",
-            "type": "python",
-            "ref_img": "common/udfs/python/pcb/ref/ref.png",
-            "ref_config_roi": "common/udfs/python/pcb/ref/roi_1.json",
-            "model_xml": "common/udfs/python/pcb/ref/pcb_fp16.xml",
-            "model_bin": "common/udfs/python/pcb/ref/pcb_fp16.bin",
-            "device": "HDDL"
-        }
-    ]
-
-    ```
-    ----
-
 2. **Dummy classifier** (to be used when no classification needs to be done)
-   ```
+   
+   ```javascript
     "udfs": [{
         "name": "dummy",
         "type": "native",
@@ -110,11 +89,9 @@ Sample configuration for classifiers used:
       * Please use `dummy` UDF filter configuration
     * Refer `Using Labels` section [Visualizer/README.md](../Visualizer/README.md) to pass
       the respective json file as command line argument to see the visualized data
-    * For testing with MYRIAD or HDDL device, user need to use frozen_inference_graph_fp16.xml
-      & frozen_inference_graph_fp16.bin files from the same path.
     ----
 
-    ```json
+    ```javascript
     "udfs": [{
             "name": "safety_gear_demo",
             "type": "native",
