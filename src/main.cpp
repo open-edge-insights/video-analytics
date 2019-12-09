@@ -124,9 +124,12 @@ void on_change_config_callback(char* key, char* va_config){
             g_va = NULL;
         }
         delete g_va_config;
-        g_va_config = va_config;
-        g_cfg_change.store(true);
-        g_err_cv.notify_one();
+        _Exit(-1);
+        // TODO: Uncomment the below logic once the dynamic cfg fix works as
+        // expected
+        //g_va_config = va_config;
+        //g_cfg_change.store(true);
+        //g_err_cv.notify_one();
     }
 }
 
