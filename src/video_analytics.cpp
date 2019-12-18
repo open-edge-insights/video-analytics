@@ -145,9 +145,8 @@ VideoAnalytics::VideoAnalytics(
 
     LOG_DEBUG_0("Subscriber config received...");
 
-    char* temp;
     char* sub_topic;
-    temp = strtok_r(sub_topics[0], "/", &sub_topics[0]);
+    strtok_r(sub_topics[0], "/", &sub_topics[0]);
     sub_topic = strtok_r(sub_topics[0], "/", &sub_topics[0]);
     if(sub_topic == NULL) {
         const char* err = "Subtopic provided is invalid";
