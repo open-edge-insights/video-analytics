@@ -203,7 +203,7 @@ VideoAnalytics::VideoAnalytics(
 
     // Initialize UDF Manager
     m_udf_manager = new UdfManager(
-            config, m_udf_input_queue, m_udf_output_queue);
+            config, m_udf_input_queue, m_udf_output_queue, m_enc_type, m_enc_lvl);
 
     // Initialize subscriber
     m_subscriber = new Subscriber<eis::udf::Frame>(
