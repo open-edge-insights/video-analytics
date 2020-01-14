@@ -116,26 +116,21 @@ VideoAnalytics::VideoAnalytics(
 
     // Get configuration values for the subscriber
     LOG_DEBUG_0("Parsing VA subscription topics");
-    
-    char** sub_topics = env_config->get_topics_from_env(SUB);
 
-    int topic_length = 0;
-    while (sub_topics[topic_length] != NULL) {
-        topic_length++;
-        if(topic_length != 1){
-            const char* err = "Only one topic is supported. Neither more, nor less";
-            LOG_ERROR("%s", err);
-            config_destroy(config);
-            config_value_destroy(queue_cvt);
-            throw(err);
-        }
+    char** sub_topics = env_config->get_topics_from_env(SUB);
+    size_t num_of_sub_topics = env_config->get_topics_count(sub_topics);
+
+    if(num_of_sub_topics != 1){
+        const char* err = "Only one topic is supported. Neither more, nor less";
+        LOG_ERROR("%s", err);
+        config_destroy(config);
+        config_value_destroy(queue_cvt);
+        throw(err);
     }
 
     LOG_DEBUG_0("Successfully read SubTopics env value...");
-    
     config_t* msgbus_config_sub = env_config->get_messagebus_config(g_config_mgr,
-            sub_topics[0], SUB);
-    
+            sub_topics, num_of_sub_topics, SUB);
     if(msgbus_config_sub == NULL) {
         const char* err = "Failed to get subscriber message bus config";
         LOG_ERROR("%s", err);
@@ -158,23 +153,20 @@ VideoAnalytics::VideoAnalytics(
     LOG_DEBUG_0("Parsing VA publisher topics");
 
     char** topics = env_config->get_topics_from_env(PUB);
+    size_t num_of_pub_topics = env_config->get_topics_count(topics);
 
-    topic_length = 0;
-    while (topics[topic_length] != NULL) {
-        topic_length++;
-        if(topic_length != 1){
-            const char* err = "Only one topic is supported. Neither more, nor less";
-            LOG_ERROR("%s", err);
-            config_destroy(config);
-            config_value_destroy(queue_cvt);
-            throw(err);
-        }
+    if(num_of_pub_topics != 1){
+        const char* err = "Only one topic is supported. Neither more, nor less";
+        LOG_ERROR("%s", err);
+        config_destroy(config);
+        config_value_destroy(queue_cvt);
+        throw(err);
     }
 
     LOG_DEBUG_0("Successfully read PubTopics env value...");
     
     config_t* pub_config = env_config->get_messagebus_config(g_config_mgr,
-            topics[0], PUB);
+            topics, num_of_pub_topics, PUB);
     if(pub_config == NULL) {
         const char* err = "Failed to get publisher message bus config";
         LOG_ERROR("%s", err);
