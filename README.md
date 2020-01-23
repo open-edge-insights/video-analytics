@@ -141,7 +141,7 @@ validating the app configuration against the above schema.
     1. Build and Run VideoAnalytics as container
 
         ```sh
-         $ cd [repo]/docker_setup
+         $ cd [repo]/build
          $ docker-compose up --build ia_video_analytics
         ```
 

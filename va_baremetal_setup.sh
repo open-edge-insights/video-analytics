@@ -1,7 +1,7 @@
 #! /bin/bash
 
 # Automation of Bare Metal execution of VideoAnalytics
-# Change DEV_MODE=true in docker_setup/.env file
+# Change DEV_MODE=true in build/.env file
 
 ./install_openvino.sh
 ./install.sh

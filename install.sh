@@ -1,6 +1,6 @@
 #!/bin/bash -x
 
-source ../../docker_setup/.env
+source ../../build/.env
 
 #Install python dependencies
 sudo -H pip3.6 install -r va_requirements.txt
