@@ -1,7 +1,7 @@
 #!/bin/bash -x
 
 # Init the EIS env varilables
-source ../../docker_setup/.env
+source ../../build/.env
 
 export DEV_MODE=$DEV_MODE
 export PROFILING=$PROFILING

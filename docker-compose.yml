@@ -1,0 +1,69 @@
+version: '3.6'
+
+services:
+  ## Define VideoAnalytics service
+  ia_video_analytics:
+    depends_on:
+      - ia_openvino_base
+    build:
+      context: $PWD/../VideoAnalytics
+      dockerfile: $PWD/../VideoAnalytics/Dockerfile
+      args:
+        EIS_VERSION: ${EIS_VERSION}
+        EIS_UID: ${EIS_UID}
+        EIS_USER_NAME: ${EIS_USER_NAME}
+        # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
+        CMAKE_BUILD_TYPE: "Release"
+    image: ${DOCKER_REGISTRY}ia_video_analytics:${EIS_VERSION}
+    container_name: ia_video_analytics
+    hostname: ia_video_analytics
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      AppName: "VideoAnalytics"
+      DEV_MODE: ${DEV_MODE}
+      PROFILING_MODE: ${PROFILING_MODE}
+      no_proxy: ${no_proxy}
+
+      # MessageBus Endpoint Configuration
+      Clients : "Visualizer,FactoryControlApp,OpcuaExport,ImageStore,InfluxDBConnector,RestDataExport,WebVisualizer,TLS_RemoteAgent"
+      CertType: "zmq"
+      ZMQ_RECV_HWM: "1000"
+
+      # Use IPC mode (zmq_ipc) when VideoIngestion and VideoAnalytics based
+      # containers are running on the same host. If they are running on diff
+      # host, please use TCP mode for communication.
+      # Eg: Stream cfg for
+      # IPC: zmq_ipc, <absolute_socket_directory_path>
+      # TPC: zmq_tcp, <publisher_host>:<publisher_port>
+      SubTopics: "VideoIngestion/camera1_stream"
+      camera1_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
+      PubTopics: "camera1_stream_results"
+      camera1_stream_results_cfg: "zmq_tcp,127.0.0.1:65013"
+      # camera1_stream_results_cfg: "zmq_ipc,${SOCKET_DIR}/"
+    privileged: true
+    volumes:
+      - "/var/tmp:/var/tmp"
+      - "/dev:/dev"
+      - "vol_eis_socket:${SOCKET_DIR}"
+    devices:
+      - "/dev/dri"
+      - "/dev/ion:/dev/ion"
+    secrets:
+      - ca_etcd
+      - etcd_VideoAnalytics_cert
+      - etcd_VideoAnalytics_key
+
+volumes:
+  vol_eis_socket:
+    driver: local
+    driver_opts:
+      type: local
+      o: bind
+      device: ${EIS_INSTALL_PATH}/sockets
+
+secrets:
+  etcd_VideoAnalytics_cert:
+    file: provision/Certificates/VideoAnalytics/VideoAnalytics_client_certificate.pem
+  etcd_VideoAnalytics_key:
+    file: provision/Certificates/VideoAnalytics/VideoAnalytics_client_key.pem
