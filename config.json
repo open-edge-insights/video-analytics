@@ -1,6 +1,0 @@
-{
-  "stream_measurement_name": "stream1",
-  "va_cert_path": "../../cert-tool/Certificates/videoanalytics/videoanalytics_server_certificate.pem",
-  "va_key_path": "../../cert-tool/Certificates/videoanalytics/videoanalytics_server_key.pem"
-
-}
