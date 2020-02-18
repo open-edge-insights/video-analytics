@@ -54,14 +54,6 @@ services:
       - etcd_VideoAnalytics_cert
       - etcd_VideoAnalytics_key
 
-volumes:
-  vol_eis_socket:
-    driver: local
-    driver_opts:
-      type: local
-      o: bind
-      device: ${EIS_INSTALL_PATH}/sockets
-
 secrets:
   etcd_VideoAnalytics_cert:
     file: provision/Certificates/VideoAnalytics/VideoAnalytics_client_certificate.pem
