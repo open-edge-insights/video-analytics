@@ -36,7 +36,7 @@ RUN /bin/bash -c "source /opt/intel/openvino/bin/setupvars.sh && \
      cmake -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} .. && \
      make install"
 
-COPY --from=common ${GO_WORK_DIR}/common/udfs ./common/udfs
+COPY --from=common ${GO_WORK_DIR}/common/udfs/native ./common/udfs/native
 # Build native UDF samples
 RUN /bin/bash -c "source /opt/intel/openvino/bin/setupvars.sh && \
     cd ./common/udfs/native && \
@@ -67,6 +67,8 @@ RUN apt-get remove -y wget && \
     apt-get remove -y git && \
     apt-get remove -y curl && \
     apt-get autoremove -y
+
+COPY --from=common ${GO_WORK_DIR}/common/udfs/python ./common/udfs/python
 
 ENV PYTHONPATH ${PYTHONPATH}:${GO_WORK_DIR}/common/udfs/python:${GO_WORK_DIR}/common/
 
