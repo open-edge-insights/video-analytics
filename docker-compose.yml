@@ -23,7 +23,9 @@ services:
       AppName: "VideoAnalytics"
       DEV_MODE: ${DEV_MODE}
       PROFILING_MODE: ${PROFILING_MODE}
-      no_proxy: ${no_proxy}
+      no_proxy: ${eis_no_proxy},${ETCD_HOST}
+      ETCD_HOST: ${ETCD_HOST}
+      ETCD_PREFIX: ${ETCD_PREFIX}
 
       # MessageBus Endpoint Configuration
       Clients : "Visualizer,FactoryControlApp,OpcuaExport,ImageStore,InfluxDBConnector,RestDataExport,WebVisualizer,TLS_RemoteAgent"
@@ -46,9 +48,13 @@ services:
       - "/var/tmp:/var/tmp"
       - "/dev:/dev"
       - "vol_eis_socket:${SOCKET_DIR}"
+      - "/opt/Intel/OpenCL/Boards:/opt/Intel/OpenCL/Boards"
+      - "/opt/altera:/opt/altera"
+      - "/opt/intel/intelFPGA:/opt/intel/intelFPGA"
     devices:
       - "/dev/dri"
       - "/dev/ion:/dev/ion"
+      - "/dev/acla10_1150_sg10:/dev/acla10_1150_sg10"
     secrets:
       - ca_etcd
       - etcd_VideoAnalytics_cert
