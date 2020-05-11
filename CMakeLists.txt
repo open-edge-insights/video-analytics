@@ -60,6 +60,7 @@ find_package(EISConfigMgr REQUIRED)
 find_package(EISMessageBus REQUIRED)
 find_package(UDFLoader REQUIRED)
 find_package(IntelSafeString REQUIRED)
+find_package(WJE REQUIRED)
 
 # Include header directories
 include_directories(
