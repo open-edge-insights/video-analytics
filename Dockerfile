@@ -1,6 +1,7 @@
 # Dockerfile for VideoAnalytics
 ARG EIS_VERSION
-FROM ia_openvino_base:$EIS_VERSION as openvino
+ARG DOCKER_REGISTRY
+FROM ${DOCKER_REGISTRY}ia_openvino_base:$EIS_VERSION as openvino
 LABEL description="VideoAnalytics image"
 
 WORKDIR ${PY_WORK_DIR}
@@ -13,8 +14,8 @@ COPY va_requirements.txt .
 RUN pip3.6 install -r va_requirements.txt && \
     rm -rf va_requirements.txt
 
-FROM ia_common:$EIS_VERSION as common
-FROM ia_video_common:$EIS_VERSION as video_common
+FROM ${DOCKER_REGISTRY}ia_common:$EIS_VERSION as common
+FROM ${DOCKER_REGISTRY}ia_video_common:$EIS_VERSION as video_common
 
 FROM openvino
 
