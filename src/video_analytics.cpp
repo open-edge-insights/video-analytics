@@ -33,7 +33,7 @@ using namespace eis::utils;
 using namespace eis::msgbus;
 
 VideoAnalytics::VideoAnalytics(
-        std::condition_variable& err_cv, const env_config_t* env_config, char* va_config, const config_mgr_t* g_config_mgr) :
+        std::condition_variable& err_cv, const env_config_t* env_config, char* va_config, const config_mgr_t* g_config_mgr, std::string app_name) :
     m_err_cv(err_cv), m_enc_type(EncodeType::NONE), m_enc_lvl(0)
 {
     // Parse the configuration
@@ -182,7 +182,7 @@ VideoAnalytics::VideoAnalytics(
     // Initialize Publisher
     m_publisher = new Publisher(
             pub_config, m_err_cv, topics[0],
-            (MessageQueue*) m_udf_output_queue);
+            (MessageQueue*) m_udf_output_queue, app_name);
     free(topics);
 
     config_value_t* udf_value = config->get_config_value(config->cfg,
@@ -195,12 +195,12 @@ VideoAnalytics::VideoAnalytics(
 
     // Initialize UDF Manager
     m_udf_manager = new UdfManager(
-            config, m_udf_input_queue, m_udf_output_queue, m_enc_type, m_enc_lvl);
+            config, m_udf_input_queue, m_udf_output_queue, app_name, m_enc_type, m_enc_lvl);
 
     // Initialize subscriber
     m_subscriber = new Subscriber<eis::udf::Frame>(
         msgbus_config_sub, m_err_cv, sub_topic,
-        (MessageQueue*) m_udf_input_queue);
+        (MessageQueue*) m_udf_input_queue, app_name);
     
 }
 

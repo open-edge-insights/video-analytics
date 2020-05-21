@@ -82,12 +82,14 @@ namespace eis {
              * \note The environmental configuration memory is not managed
              *      by this object. It is managed by the caller.
              *
-             * @param err_cv     - Error condition variable
-             * @param env_config - Environmental configuration
-             * @param va_config  - VideoAnalytics config
+             * @param err_cv        - Error condition variable
+             * @param env_config    - Environmental configuration
+             * @param va_config     - VideoAnalytics config
+             * @param g_config_mgr  - ConfigManager handle
+             * @param app_name      - App_name env variable for App_Name
              */
             VideoAnalytics(
-                    std::condition_variable& err_cv, const env_config_t* env_config, char* va_config, const config_mgr_t* g_config_mgr);
+                    std::condition_variable& err_cv, const env_config_t* env_config, char* va_config, const config_mgr_t* g_config_mgr, std::string app_name);
 
             //Destructor
             ~VideoAnalytics();
