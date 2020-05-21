@@ -117,7 +117,7 @@ void signal_callback_handler(int signum){
     exit(0);
 }
 
-void va_initialize(char* va_config){
+void va_initialize(char* va_config, std::string app_name){
     if(g_va) {
         delete g_va;
     }
@@ -129,7 +129,7 @@ void va_initialize(char* va_config){
         }
     }
     g_env_config_client = env_config_new();
-    g_va = new VideoAnalytics(g_err_cv, g_env_config_client, va_config, g_config_mgr);
+    g_va = new VideoAnalytics(g_err_cv, g_env_config_client, va_config, g_config_mgr, app_name);
     g_va->start();
 }
 
@@ -254,7 +254,7 @@ int main(int argc, char** argv) {
 
         LOG_DEBUG("Registering watch on config key: %s", config_key);
         g_config_mgr->register_watch_key(config_key, on_change_config_callback);
-        va_initialize(g_va_config);
+        va_initialize(g_va_config, app_name);
 
         std::mutex mtx;
 
@@ -262,7 +262,7 @@ int main(int argc, char** argv) {
             std::unique_lock<std::mutex> lk(mtx);
             g_err_cv.wait(lk);
             if(g_cfg_change.load()) {
-                va_initialize(g_va_config);
+                va_initialize(g_va_config, app_name);
                 g_cfg_change.store(false);
             } else {
                 break;
