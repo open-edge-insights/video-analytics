@@ -123,6 +123,10 @@ void va_initialize(char* va_config){
     }
     if(!g_config_mgr) {
         get_config_mgr();
+        if(!g_config_mgr) {
+            const char* err = "config-mgr object creation failed.";
+            throw(err);
+        }
     }
     g_env_config_client = env_config_new();
     g_va = new VideoAnalytics(g_err_cv, g_env_config_client, va_config, g_config_mgr);
@@ -269,6 +273,10 @@ int main(int argc, char** argv) {
     }catch(const std::exception& e) {
         LOG_ERROR("Exception occurred: %s", e.what());
         clean_up();
+    }catch(const char *err) {
+        LOG_ERROR("Exception occurred: %s", err);
+        clean_up();
     }
+
     return -1;
 }
