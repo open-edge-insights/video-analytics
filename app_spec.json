@@ -1,0 +1,45 @@
+{
+    "Module" : {
+        "Name": "VideoAnalytics",
+        "Description": "VideoAnalytics module manifest",
+        "SchemaVersion": "0.2",
+        "ManifestFile": "${idx:videoanalytics:$EIS_VERSION}",
+        "Resources": {
+            "CPU": 100,
+            "MemoryMB": 100
+        },
+        "ExecutionEnv": {
+            "AppName": "VideoAnalytics",
+            "ETCD_ENDPOINT": "${datastore.endpoint}",
+            "CONFIGMGR_CACERT": "${databucket.cacert}",
+            "CONFIGMGR_CERT": "${databucket.cert}",
+            "CONFIGMGR_KEY": "${databucket.key}",
+            "DEV_MODE": "$DEV_MODE",
+            "ETCD_PREFIX": "$ETCD_PREFIX",
+            "PROFILING_MODE": "false",
+            "ZMQ_RECV_HWM": "50",
+            "Clients": "WebVisualizer,InfluxDBConnector,ImageStore",
+            "SubTopics": "VideoIngestion/camera1_stream",
+            "camera1_stream_cfg": "zmq_tcp,${ep.inputVI.remoteaddress}:${ep.inputVI.remoteport}",
+            "PubTopics": "camera1_stream_results",
+            "camera1_stream_results_cfg": "zmq_tcp,0.0.0.0:${ep.outputVA.localport}"
+        },
+        "Endpoints": [
+            {
+                "Name": "outputVA",
+                "Endtype": "server",
+                "Protocol": "TCP",
+                "DataType": "messages",
+                "Link": "va-output"
+            },
+            {
+                "Name": "inputVI",
+                "Endtype": "client",
+                "Protocol": "TCP",
+                "DataType": "messages",
+                "Link": "vi-va-link",
+                "Port": "29170"
+            }
+        ]
+    }
+}
