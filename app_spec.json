@@ -1,5 +1,5 @@
 {
-    "Module" : {
+    "Module": {
         "Name": "VideoAnalytics",
         "Description": "VideoAnalytics module manifest",
         "SchemaVersion": "0.2",
@@ -20,7 +20,7 @@
             "ZMQ_RECV_HWM": "50",
             "Clients": "WebVisualizer,InfluxDBConnector,ImageStore",
             "SubTopics": "VideoIngestion/camera1_stream",
-            "camera1_stream_cfg": "zmq_tcp,${ep.inputVI.remoteaddress}:${ep.inputVI.remoteport}",
+            "camera1_stream_cfg": "zmq_ipc,${ep.inputsocket-va.mountpath}",
             "PubTopics": "camera1_stream_results",
             "camera1_stream_results_cfg": "zmq_tcp,0.0.0.0:${ep.outputVA.localport}"
         },
@@ -33,12 +33,11 @@
                 "Link": "va-output"
             },
             {
-                "Name": "inputVI",
-                "Endtype": "client",
-                "Protocol": "TCP",
-                "DataType": "messages",
-                "Link": "vi-va-link",
-                "Port": "29170"
+                "Name": "inputsocket-va",
+                "Endtype": "socket",
+                "DataType": "ZeroMQ/UNIX",
+                "MountPath": "/eissockets",
+                "Link": "vi-va-link"
             }
         ]
     }
