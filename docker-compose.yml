@@ -74,9 +74,12 @@ services:
       - "/opt/altera:/opt/altera"
       - "/opt/intel/intelFPGA:/opt/intel/intelFPGA"
     devices:
-      - "/dev/dri"
-      - "/dev/ion:/dev/ion"
-      - "/dev/acla10_1150_sg10:/dev/acla10_1150_sg10"
+      # Following devices under /dev filesystem will be needed based on usecase
+      # dri - GPU
+      # ion - VPU
+      # acla10_1150_sg20 - FPGA
+      # Selective mount can be done for deployment      
+      - "/dev/:/dev/"
     secrets:
       - ca_etcd
       - etcd_VideoAnalytics_cert
