@@ -33,19 +33,24 @@
 #include <exception>
 #include <vector>
 #include <condition_variable>
+#include <eis/udf/frame.h>
 #include <eis/utils/thread_safe_queue.h>
 #include <eis/utils/logger.h>
 #include <eis/udf/udf_manager.h>
 #include <eis/utils/config.h>
 #include <eis/utils/json_config.h>
-#include <eis/udf/frame.h>
 #include <eis/msgbus/msgbus.h>
 #include <eis/udf/udf_manager.h>
 #include <eis/config_manager/config_manager.h>
 #include <eis/config_manager/env_config.h>
 
-using namespace eis::utils;
-using namespace eis::udf;
+using eis::udf::UdfManager;
+using eis::udf::Frame;
+using eis::udf::FrameQueue;
+using eis::udf::EncodeType;
+using eis::msgbus::MessageQueue;
+using eis::msgbus::Subscriber;
+using eis::msgbus::Publisher;
 
 namespace eis {
 	namespace va {
@@ -66,10 +71,10 @@ namespace eis {
             std::condition_variable& m_err_cv;
 
             // EIS MsgBus Publisher
-            msgbus::Publisher* m_publisher;
+            Publisher* m_publisher;
 
             // EIS MsgBus Subscriber
-            msgbus::Subscriber<eis::udf::Frame>* m_subscriber;
+            Subscriber<Frame>* m_subscriber;
 
             // Encoding details
             EncodeType m_enc_type;
