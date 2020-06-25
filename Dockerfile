@@ -68,7 +68,6 @@ RUN /bin/bash -c "source /opt/intel/openvino/bin/setupvars.sh && \
      ./frame-tests && \
      ./udfloader-tests && \
      cd .. ; fi && \
-
      make install"
 
 COPY --from=video_common ${GO_WORK_DIR}/common/udfs/native ./common/udfs/native
