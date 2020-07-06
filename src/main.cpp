@@ -33,7 +33,7 @@
 #include <safe_lib.h>
 #include <eis/utils/json_validator.h>
 #include "eis/va/video_analytics.h"
-#define MAX_CONFIG_KEY_LENGTH 40
+#define MAX_CONFIG_KEY_LENGTH 250
 
 using eis::va::VideoAnalytics;
 
@@ -44,20 +44,13 @@ static config_mgr_t* g_config_mgr = NULL;
 static env_config_t* g_env_config_client = NULL;
 static std::atomic<bool> g_cfg_change;
 
-void get_config_mgr() {
-    std::string pub_cert_file = "";
-    std::string pri_key_file = "";
-    std::string trust_file = "";
-    std::string app_name = "";
+void get_config_mgr(char* str_app_name) {
+    char pub_cert_file [MAX_CONFIG_KEY_LENGTH];
+    char pri_key_file [MAX_CONFIG_KEY_LENGTH];
+    char trust_file [MAX_CONFIG_KEY_LENGTH];
+    char storage_type [MAX_CONFIG_KEY_LENGTH];
+    int ret = 0;
     std::string dev_mode_str = "";
-
-    char* str_app_name = NULL;
-    str_app_name = getenv("AppName");
-    if (str_app_name == NULL) {
-        throw "\"AppName\" env not set";
-    } else {
-        app_name = str_app_name;
-    }
 
     char* str_dev_mode = NULL;
     str_dev_mode = getenv("DEV_MODE");
@@ -73,23 +66,56 @@ void get_config_mgr() {
     }
 
     if (!dev_mode) {
-        pub_cert_file = "/run/secrets/etcd_" + app_name + "_cert";
-        pri_key_file = "/run/secrets/etcd_" + app_name + "_key";
-        trust_file = "/run/secrets/ca_etcd";
+        ret = snprintf(pub_cert_file, MAX_CONFIG_KEY_LENGTH,
+                 "/run/secrets/etcd_%s_cert", str_app_name);
+        if (ret < 0) {
+            throw "failed to create pub_cert_file";
+        }
+        ret = snprintf(pri_key_file, MAX_CONFIG_KEY_LENGTH,
+                 "/run/secrets/etcd_%s_key", str_app_name);
+        if (ret < 0) {
+            throw "failed to create pri_key_file";
+        }
+        ret = strncpy_s(trust_file, MAX_CONFIG_KEY_LENGTH + 1,
+                  "/run/secrets/ca_etcd", MAX_CONFIG_KEY_LENGTH);
+        if (ret != 0) {
+            throw "failed to create trust file";
+        }
+
         char* confimgr_cert = getenv("CONFIGMGR_CERT");
         char* confimgr_key = getenv("CONFIGMGR_KEY");
         char* confimgr_cacert = getenv("CONFIGMGR_CACERT");
-        if (confimgr_cert && confimgr_key && confimgr_key) {
-            pub_cert_file = confimgr_cert;
-            pri_key_file = confimgr_key;
-            trust_file = confimgr_cacert;
+        if (confimgr_cert && confimgr_key && confimgr_cacert) {
+           ret = strncpy_s(pub_cert_file, MAX_CONFIG_KEY_LENGTH + 1,
+                      confimgr_cert, MAX_CONFIG_KEY_LENGTH);
+            if (ret != 0) {
+                throw "failed to add cert to trust file";
+            }
+            ret = strncpy_s(pri_key_file, MAX_CONFIG_KEY_LENGTH + 1,
+                      confimgr_key, MAX_CONFIG_KEY_LENGTH);
+            if (ret !=0) {
+                throw "failed to add key to trust file";
+            }
+            ret = strncpy_s(trust_file, MAX_CONFIG_KEY_LENGTH + 1,
+                      confimgr_cacert, MAX_CONFIG_KEY_LENGTH);
+            if (ret != 0 ){
+                 throw "failed to add cacert to trust file";
+            }
+
         }
     }
 
-    g_config_mgr = config_mgr_new("etcd",
-                                 (char*)pub_cert_file.c_str(),
-                                 (char*)pri_key_file.c_str(),
-                                 (char*)trust_file.c_str());
+    ret = strncpy_s(storage_type, (MAX_CONFIG_KEY_LENGTH + 1),
+                  "etcd", MAX_CONFIG_KEY_LENGTH);
+    if (ret != 0){
+        throw "failed to add storage type";
+    }
+
+    g_config_mgr = config_mgr_new(storage_type,
+                                 pub_cert_file,
+                                 pri_key_file,
+                                 trust_file);
+
 }
 
 void usage(const char* name) {
@@ -112,17 +138,21 @@ void signal_callback_handler(int signum) {
     exit(0);
 }
 
-void va_initialize(char* va_config, std::string app_name) {
+void va_initialize(char* va_config, char* str_app_name) {
     if (g_va) {
         delete g_va;
     }
     if (!g_config_mgr) {
-        get_config_mgr();
+        get_config_mgr(str_app_name);
         if (!g_config_mgr) {
             const char* err = "config-mgr object creation failed.";
             throw(err);
         }
     }
+
+    std::string app_name = "";
+    app_name = str_app_name;
+
     g_env_config_client = env_config_new();
     g_va = new VideoAnalytics(g_err_cv, g_env_config_client, va_config,
                               g_config_mgr, app_name);
@@ -208,7 +238,14 @@ int main(int argc, char** argv) {
             usage(argv[0]);
             return -1;
         }
-        get_config_mgr();
+
+        char* str_app_name = NULL;
+        str_app_name = getenv("AppName");
+        if (str_app_name == NULL) {
+            throw "\"AppName\" env not set";
+        }
+
+        get_config_mgr(str_app_name);
 
         char* str_log_level = NULL;
         log_lvl_t log_level = LOG_LVL_ERROR;  // default log level is `ERROR`
@@ -229,20 +266,10 @@ int main(int argc, char** argv) {
         set_log_level(log_level);
         }
 
-        std::string app_name = "";
-
-        char* str_app_name = NULL;
-        str_app_name = getenv("AppName");
-        if (str_app_name == NULL) {
-            throw "\"AppName\" env not set";
-        } else {
-            app_name = str_app_name;
-        }
-
         // Get the configuration from the configuration manager
         char config_key[MAX_CONFIG_KEY_LENGTH];
         snprintf(config_key, MAX_CONFIG_KEY_LENGTH, "/%s/config",
-                 app_name.c_str());
+                 str_app_name);
 
         // Validating config against schema
         if (!validate_config(config_key)) {
@@ -254,7 +281,7 @@ int main(int argc, char** argv) {
 
         LOG_DEBUG("Registering watch on config key: %s", config_key);
         g_config_mgr->register_watch_key(config_key, on_change_config_callback);
-        va_initialize(g_va_config, app_name);
+        va_initialize(g_va_config, str_app_name);
 
         std::mutex mtx;
 
@@ -262,7 +289,7 @@ int main(int argc, char** argv) {
             std::unique_lock<std::mutex> lk(mtx);
             g_err_cv.wait(lk);
             if (g_cfg_change.load()) {
-                va_initialize(g_va_config, app_name);
+                va_initialize(g_va_config, str_app_name);
                 g_cfg_change.store(false);
             } else {
                 break;
