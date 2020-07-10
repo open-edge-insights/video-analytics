@@ -48,8 +48,7 @@
           "type": "object",
           "required": [
               "type",
-              "name",
-              "device"
+              "name"
           ],
           "properties": {
             "type": {
