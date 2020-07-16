@@ -37,6 +37,8 @@ All the app module configuration are added into distributed
 key-value data store under `AppName` env as mentioned in the
 environment section of this app's service definition in docker-compose.
 
+Developer mode related overrides go into docker-compose-dev.override.yml
+
 If `AppName` is `VideoAnalytics`, then the app's config would be fetched from
 `/VideoAnalytics/config` key via EIS Configuration Manager.
 Below is the JSON schema for app's config:
