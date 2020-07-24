@@ -41,6 +41,7 @@ services:
     hostname: ia_video_analytics
     network_mode: host
     restart: unless-stopped
+    ipc: "none"
     environment:
       AppName: "VideoAnalytics"
       DEV_MODE: ${DEV_MODE}
