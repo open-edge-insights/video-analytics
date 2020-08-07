@@ -191,15 +191,22 @@ bool validate_config(char config_key[]) {
     out << config_key;
     out.close();
 
-    WJReader readjson;
-    WJReader readschema;
-    WJElement json;
-    WJElement schema;
+    WJReader readjson = NULL;
+    WJReader readschema = NULL;
+    WJElement json = NULL;
+    WJElement schema = NULL;
 
-    readjson = WJROpenFILEDocument(fopen("./VideoAnalytics/config.json", "r"),
-                                   NULL, 0);
+    // Fetch config file
+    FILE* config_fp = fopen("./VideoAnalytics/config.json", "r");
+    if(config_fp == NULL) {
+        return false;
+    }
+    readjson = WJROpenFILEDocument(config_fp, NULL, 0);
     if(readjson == NULL) {
         LOG_ERROR_0("config json could not be read");
+        if(config_fp != NULL) {
+            fclose(config_fp);
+        }
         return false;
     }
     json = WJEOpenDocument(readjson, NULL, NULL, NULL);
@@ -208,13 +215,29 @@ bool validate_config(char config_key[]) {
         if(readjson != NULL) {
             free(readjson);
         }
+        if(config_fp != NULL) {
+            fclose(config_fp);
+        }
         return false;
     }
 
-    readschema = WJROpenFILEDocument(fopen("./VideoAnalytics/schema.json", "r"),
-                                     NULL, 0);
+    // Fetch schema file
+    FILE* schema_fp = fopen("./VideoAnalytics/schema.json", "r");
+    if(schema_fp == NULL) {
+        if(config_fp != NULL) {
+            fclose(config_fp);
+        }
+        return false;
+    }
+    readschema = WJROpenFILEDocument(schema_fp, NULL, 0);
     if(readschema == NULL) {
         LOG_ERROR_0("schema json could not be read");
+        if(schema_fp != NULL) {
+            fclose(schema_fp);
+        }
+        if(config_fp != NULL) {
+            fclose(config_fp);
+        }
         return false;
     }
     schema = WJEOpenDocument(readschema, NULL, NULL, NULL);
@@ -223,15 +246,42 @@ bool validate_config(char config_key[]) {
         if(readschema != NULL) {
             free(readschema);
         }
+        if(schema_fp != NULL) {
+            fclose(schema_fp);
+        }
+        if(config_fp != NULL) {
+            fclose(config_fp);
+        }
         return false;
     }
 
-    bool result = validate_json(schema, json);
+    // Validating config against schema
+    bool result = false;
+    if(schema != NULL && json != NULL) {
+        result = validate_json(schema, json);
+    }
 
-    WJECloseDocument(json);
-    WJECloseDocument(schema);
-    WJRCloseDocument(readjson);
-    WJRCloseDocument(readschema);
+    // Close schema validation related documents
+    if(json != NULL) {
+        WJECloseDocument(json);
+    }
+    if(schema != NULL) {
+        WJECloseDocument(schema);
+    }
+    if(readjson != NULL) {
+        WJRCloseDocument(readjson);
+    }
+    if(readschema != NULL) {
+        WJRCloseDocument(readschema);
+    }
+
+    // Closing json config & schema file pointers
+    if(config_fp != NULL) {
+        fclose(config_fp);
+    }
+    if(schema_fp != NULL) {
+        fclose(schema_fp);
+    }
 
     if (!result) {
         // Clean up and return if failure
@@ -250,7 +300,6 @@ bool validate_config(char config_key[]) {
         clean_up();
         return false;
     }
-
     return true;
 }
 
