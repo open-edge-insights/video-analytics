@@ -372,13 +372,15 @@ int main(int argc, char** argv) {
         }
 
         clean_up();
-    }catch(const std::exception& e) {
-        LOG_ERROR("Exception occurred: %s", e.what());
-        clean_up();
-    }catch(const char *err) {
+    } catch(const char *err) {
         LOG_ERROR("Exception occurred: %s", err);
         clean_up();
+    } catch(const std::exception& e) {
+        LOG_ERROR("Exception occurred: %s", e.what());
+        clean_up();
+    } catch(...) {
+        LOG_ERROR("Exception occurred in Video Analytics");
+        clean_up();
     }
-
     return -1;
 }
