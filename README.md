@@ -139,22 +139,3 @@ https://docs.openvinotoolkit.org/latest/_docs_IE_DG_supported_plugins_FPGA.html
 
 One can use [JSON validator tool](https://www.jsonschemavalidator.net/) for
 validating the app configuration against the above schema.
-
-## `Installation`
-
-* Follow [provision/README.md](../README#provision-eis.md) for EIS provisioning
-
-* Run VideoAnalytics
-
-  Present working directory to try out below commands is: `[repo]/VideoAnalytics`
-
-    1. Build and Run VideoAnalytics as container
-
-        ```sh
-         $ cd [repo]/build
-         $ docker-compose up --build ia_video_analytics
-        ```
-
-    2. For any updates to EIS VideoAnalytics config key in distributed key-value
-       store using UI's like `EtcdKeeper` or programmatically, the container
-       restarts to pick the new changes.
