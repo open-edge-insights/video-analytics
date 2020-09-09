@@ -22,7 +22,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: videoanalytics
-  namespace: kube-eis
+  namespace: eis
 spec:
   ports:
   - port: 65013
@@ -36,7 +36,7 @@ metadata:
   labels:
     app: videoanalytics
   name: ia-video-analytics
-  namespace: kube-eis
+  namespace: eis
 spec:
   containers:
   - name: ia-video-analytics
