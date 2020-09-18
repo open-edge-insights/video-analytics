@@ -30,103 +30,114 @@ spec:
   selector:
     app: videoanalytics
 ---
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   labels:
     app: videoanalytics
-  name: ia-video-analytics
+  name: deployment-video-analytics
   namespace: eis
+
 spec:
-  containers:
-  - name: ia-video-analytics
-    image: ia_video_analytics:${EIS_VERSION}
-    securityContext:
-      privileged: true
-    volumeMounts:
-    - name: eis-dev
-      mountPath: /dev
-    - name: eis-socket
-      mountPath: /EIS/sockets
-    - name: eis-tmp
-      mountPath: /var/tmp
-    - name: opencl
-      mountPath: /opt/Intel/OpenCL/Boards
-    - name: altera
-      mountPath: /opt/altera
-    - name: fpga
-      mountPath: /opt/intel/intelFPGA
-    - name: "ca-cert"
-      mountPath: /run/secrets/ca_etcd
-    - name: "video-analytics-cert"
-      mountPath: /run/secrets/etcd_VideoAnalytics_cert
-    - name: "video-analytics-key"
-      mountPath: /run/secrets/etcd_VideoAnalytics_key
+  replicas: 1
+  selector:
+    matchLabels:
+      app: videoanalytics
+  template:
+    metadata:
+      labels:
+        app: videoanalytics
+    spec:
+      #nodeName: master-node
+      containers:
+      - name: ia-video-analytics
+        image: ia_video_analytics:${EIS_VERSION}
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: eis-dev
+          mountPath: /dev
+        - name: eis-socket
+          mountPath: ${SOCKET_DIR}
+        - name: eis-tmp
+          mountPath: /var/tmp
+        - name: opencl
+          mountPath: /opt/Intel/OpenCL/Boards
+        - name: altera
+          mountPath: /opt/altera
+        - name: fpga
+          mountPath: /opt/intel/intelFPGA
+        - name: "ca-cert"
+          mountPath: /run/secrets/ca_etcd
+        - name: "video-analytics-cert"
+          mountPath: /run/secrets/etcd_VideoAnalytics_cert
+        - name: "video-analytics-key"
+          mountPath: /run/secrets/etcd_VideoAnalytics_key
 
-    env:
-    - name: AppName
-      value: "VideoAnalytics"
-    - name: DEV_MODE
-      value: '${DEV_MODE}'
-    - name: PROFILING_MODE
-      value: '${PROFILING_MODE}'
-    - name: no_proxy
-      value: '${eis_no_proxy},${RTSP_CAMERA_IP}'
-    - name: ETCD_HOST
-      value: etcd
-    - name: ETCD_CLIENT_PORT
-      value: '${ETCD_CLIENT_PORT}'
-    - name: PROVISION_MODE
-      value: '${PROVISION_MODE}'
-    - name: CONFIGMGR_CACERT
-      value: "/run/secrets/ca_etcd/ca_certificate.pem"
-    - name: CONFIGMGR_CERT
-      value: "/run/secrets/etcd_VideoAnalytics_cert/VideoAnalytics_client_certificate.pem"
-    - name: CONFIGMGR_KEY
-      value: "/run/secrets/etcd_VideoAnalytics_key/VideoAnalytics_client_key.pem"
+        env:
+        - name: AppName
+          value: "VideoAnalytics"
+        - name: DEV_MODE
+          value: '${DEV_MODE}'
+        - name: PROFILING_MODE
+          value: '${PROFILING_MODE}'
+        - name: no_proxy
+          value: '${eis_no_proxy},${RTSP_CAMERA_IP}'
+        - name: ETCD_HOST
+          value: etcd
+        - name: ETCD_CLIENT_PORT
+          value: '${ETCD_CLIENT_PORT}'
+        - name: PROVISION_MODE
+          value: '${PROVISION_MODE}'
+        - name: CONFIGMGR_CACERT
+          value: "/run/secrets/ca_etcd/ca_certificate.pem"
+        - name: CONFIGMGR_CERT
+          value: "/run/secrets/etcd_VideoAnalytics_cert/VideoAnalytics_client_certificate.pem"
+        - name: CONFIGMGR_KEY
+          value: "/run/secrets/etcd_VideoAnalytics_key/VideoAnalytics_client_key.pem"
 
-      # MessageBus Endpoint Configuration
-      # Setting Visualizer as a subscriber here for FpsCalculator
-    - name: Clients
-      value: "Visualizer,FactoryControlApp,OpcuaExport,ImageStore,InfluxDBConnector,RestDataExport,WebVisualizer,TLS_RemoteAgent"
-    - name: CertType
-      value: "zmq"
-    - name: ZMQ_RECV_HWM
-      value: "50"
-    - name: SubTopics
-      value: "VideoIngestion/camera1_stream"
-    - name: PubTopics
-      value: "camera1_stream_results"
-    - name: camera1_stream_cfg
-      value: "zmq_tcp,videoingestion:65012"
-    - name: camera1_stream_results_cfg
-      value: "zmq_tcp,0.0.0.0:65013"
+          # MessageBus Endpoint Configuration
+          # Setting Visualizer as a subscriber here for FpsCalculator
+        - name: Clients
+          value: "Visualizer,FactoryControlApp,OpcuaExport,ImageStore,InfluxDBConnector,RestDataExport,WebVisualizer,TLS_RemoteAgent"
+        - name: CertType
+          value: "zmq"
+        - name: ZMQ_RECV_HWM
+          value: "50"
+        - name: SubTopics
+          value: "VideoIngestion/camera1_stream"
+        - name: PubTopics
+          value: "camera1_stream_results"
+        - name: camera1_stream_cfg
+          value: "zmq_tcp,videoingestion:65012"
+        - name: camera1_stream_results_cfg
+          value: "zmq_tcp,0.0.0.0:65013"
 
-  volumes:
-  - name: eis-dev
-    hostPath:
-      path: /dev
-  - name: eis-socket
-    hostPath:
-      path: /opt/intel/eis/sockets
-  - name: eis-tmp
-    hostPath:
-      path: /var/tmp
-  - name: opencl
-    hostPath:
-      path: /opt/Intel/OpenCL/Boards
-  - name: altera
-    hostPath:
-      path: /opt/altera
-  - name: fpga
-    hostPath:
-      path: /opt/intel/intelFPGA
-  - name: "ca-cert"
-    secret:
-      secretName: ca-etcd
-  - name: "video-analytics-cert"
-    secret:
-      secretName: videoanalytics-cert
-  - name: "video-analytics-key"
-    secret:
-      secretName: videoanalytics-key
+      volumes:
+      - name: eis-dev
+        hostPath:
+          path: /dev
+      - name: eis-socket
+        hostPath:
+          path: ${EIS_INSTALL_PATH}/sockets
+      - name: eis-tmp
+        hostPath:
+          path: /var/tmp
+      - name: opencl
+        hostPath:
+          path: /opt/Intel/OpenCL/Boards
+      - name: altera
+        hostPath:
+          path: /opt/altera
+      - name: fpga
+        hostPath:
+          path: /opt/intel/intelFPGA
+      - name: "ca-cert"
+        secret:
+          secretName: ca-etcd
+      - name: "video-analytics-cert"
+        secret:
+          secretName: videoanalytics-cert
+      - name: "video-analytics-key"
+        secret:
+          secretName: videoanalytics-key
