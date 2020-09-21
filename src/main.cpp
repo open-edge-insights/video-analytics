@@ -197,7 +197,7 @@ bool validate_config(char config_key[]) {
     WJElement schema = NULL;
 
     // Fetch config file
-    FILE* config_fp = fopen("./VideoAnalytics/config.json", "r");
+    FILE* config_fp = fopen("./config.json", "r");
     if(config_fp == NULL) {
         return false;
     }
@@ -346,13 +346,13 @@ int main(int argc, char** argv) {
         snprintf(config_key, MAX_CONFIG_KEY_LENGTH, "/%s/config",
                  str_app_name);
 
-        // Validating config against schema
-        if (!validate_config(config_key)) {
-            return -1;
-        }
-
         g_va_config = g_config_mgr->get_config(config_key);
         LOG_DEBUG("App config: %s", g_va_config);
+
+        // Validating config against schema
+        if (!validate_config(g_va_config)) {
+            return -1;
+        }
 
         LOG_DEBUG("Registering watch on config key: %s", config_key);
         g_config_mgr->register_watch_key(config_key, on_change_config_callback);
