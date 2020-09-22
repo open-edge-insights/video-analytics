@@ -167,7 +167,7 @@ void on_change_config_callback(char* key, char* va_config) {
         }
         delete g_va_config;
         _Exit(-1);
-        // TODO(nagdeep.gk@intel.com): Uncomment the below logic once the
+        // Uncomment the below logic once the
         // dynamic cfg fix works as
         // expected
         // g_va_config = va_config;
