@@ -1,5 +1,5 @@
 {
-    "/VideoAnalytics/config": {
+    "config": {
         "encoding": {
             "type": "jpeg",
             "level": 95
@@ -17,5 +17,5 @@
             "device": "CPU"
         }]
     },
-    "/VideoAnalytics/interfaces": {}
+    "interfaces": {}
 }
