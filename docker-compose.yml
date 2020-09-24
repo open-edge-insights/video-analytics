@@ -49,23 +49,7 @@ services:
       no_proxy: ${eis_no_proxy},${ETCD_HOST}
       ETCD_HOST: ${ETCD_HOST}
       ETCD_PREFIX: ${ETCD_PREFIX}
-
-      # MessageBus Endpoint Configuration
-      Clients : "Visualizer,FactoryControlApp,OpcuaExport,ImageStore,InfluxDBConnector,RestDataExport,WebVisualizer,TLSRemoteAgent"
       CertType: "zmq"
-      ZMQ_RECV_HWM: "50"
-
-      # Use IPC mode (zmq_ipc) when VideoIngestion and VideoAnalytics based
-      # containers are running on the same host. If they are running on diff
-      # host, please use TCP mode for communication.
-      # Eg: Stream cfg for
-      # IPC: zmq_ipc, <absolute_socket_directory_path>
-      # TPC: zmq_tcp, <publisher_host>:<publisher_port>
-      SubTopics: "VideoIngestion/camera1_stream"
-      camera1_stream_cfg: "zmq_ipc,${SOCKET_DIR}/"
-      PubTopics: "camera1_stream_results"
-      camera1_stream_results_cfg: "zmq_tcp,127.0.0.1:65013"
-      # camera1_stream_results_cfg: "zmq_ipc,${SOCKET_DIR}/"
     privileged: true
     volumes:
       - "/var/tmp:/var/tmp"

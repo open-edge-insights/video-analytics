@@ -17,12 +17,9 @@
             "DEV_MODE": "$DEV_MODE",
             "ETCD_PREFIX": "$ETCD_PREFIX",
             "PROFILING_MODE": "false",
-            "ZMQ_RECV_HWM": "50",
-            "Clients": "WebVisualizer,InfluxDBConnector,ImageStore,RestDataExport,FactoryControlApp,OpcuaExport",
-            "SubTopics": "VideoIngestion/camera1_stream",
-            "camera1_stream_cfg": "zmq_tcp,${ep.input-va.remoteaddress}:${ep.input-va.remoteport}",
-            "PubTopics": "camera1_stream_results",
-            "camera1_stream_results_cfg": "zmq_tcp,0.0.0.0:${ep.outputVA.localport}"
+            "PUBLISHER_ENDPOINT": "0.0.0.0:${ep.outputVA.localport}",
+            "SUBSCRIBER_TYPE": "zmq_tcp",
+            "SUBSCRIBER_ENDPOINT": "${ep.input-va.remoteaddress}:${ep.input-va.remoteport}"
         },
         "Endpoints": [
             {

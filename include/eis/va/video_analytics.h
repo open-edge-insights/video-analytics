@@ -41,8 +41,8 @@
 #include <eis/utils/json_config.h>
 #include <eis/msgbus/msgbus.h>
 #include <eis/udf/udf_manager.h>
-#include <eis/config_manager/config_manager.h>
 #include <eis/config_manager/env_config.h>
+#include "eis/config_manager/config_mgr.hpp"
 
 using eis::udf::UdfManager;
 using eis::udf::Frame;
@@ -51,6 +51,7 @@ using eis::udf::EncodeType;
 using eis::msgbus::MessageQueue;
 using eis::msgbus::Subscriber;
 using eis::msgbus::Publisher;
+using namespace eis::config_manager;
 
 namespace eis {
 	namespace va {
@@ -88,13 +89,12 @@ namespace eis {
              *      by this object. It is managed by the caller.
              *
              * @param err_cv        - Error condition variable
-             * @param env_config    - Environmental configuration
              * @param va_config     - VideoAnalytics config
-             * @param g_config_mgr  - ConfigManager handle
+             * @param cfg_mgr       - ConfigManager handle
              * @param app_name      - App_name env variable for App_Name
              */
             VideoAnalytics(
-                    std::condition_variable& err_cv, const env_config_t* env_config, char* va_config, const config_mgr_t* g_config_mgr, std::string app_name);
+                    std::condition_variable& err_cv, char* va_config, ConfigMgr* cfg_mgr, std::string app_name);
 
             //Destructor
             ~VideoAnalytics();
