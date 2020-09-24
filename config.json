@@ -17,5 +17,32 @@
             "device": "CPU"
         }]
     },
-    "interfaces": {}
+    "interfaces": {
+        "Subscribers": [
+            {
+                "Name": "default",
+                "Type": "zmq_ipc",
+                "EndPoint": "/EIS/sockets",
+                "PublisherAppName": "VideoIngestion",
+                "Topics": [
+                    "camera1_stream"
+                ],
+                "zmq_recv_hwm": 50
+            }
+        ],
+        "Publishers": [
+            {
+                "Name": "default",
+                "Type": "zmq_tcp",
+                "EndPoint": "127.0.0.1:65013",
+                "Topics": [
+                    "camera1_stream_results"
+                ],
+                "AllowedClients": [
+                    "*"
+                ],
+                "zmq_recv_hwm": 50
+            }
+        ]
+    }
 }

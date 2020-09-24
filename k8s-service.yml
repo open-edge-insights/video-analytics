@@ -95,23 +95,17 @@ spec:
           value: "/run/secrets/etcd_VideoAnalytics_cert/VideoAnalytics_client_certificate.pem"
         - name: CONFIGMGR_KEY
           value: "/run/secrets/etcd_VideoAnalytics_key/VideoAnalytics_client_key.pem"
-
-          # MessageBus Endpoint Configuration
-          # Setting Visualizer as a subscriber here for FpsCalculator
-        - name: Clients
-          value: "Visualizer,FactoryControlApp,OpcuaExport,ImageStore,InfluxDBConnector,RestDataExport,WebVisualizer,TLS_RemoteAgent"
         - name: CertType
           value: "zmq"
-        - name: ZMQ_RECV_HWM
-          value: "50"
-        - name: SubTopics
-          value: "VideoIngestion/camera1_stream"
-        - name: PubTopics
-          value: "camera1_stream_results"
-        - name: camera1_stream_cfg
-          value: "zmq_tcp,videoingestion:65012"
-        - name: camera1_stream_results_cfg
-          value: "zmq_tcp,0.0.0.0:65013"
+        # Override the endpoint provided in interfaces for SUBSCRIBER
+        - name: SUBSCRIBER_ENDPOINT
+          value: "videoingestion:65012"
+        # Override the type provided in interfaces for SUBSCRIBER
+        - name: SUBSCRIBER_TYPE
+          value: "zmq_tcp"
+        # Override the endpoint provided in interfaces for PUBLISHER
+        - name: PUBLISHER_ENDPOINT
+          value: "0.0.0.0:65013"
 
       volumes:
       - name: eis-dev

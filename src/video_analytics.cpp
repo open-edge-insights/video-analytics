@@ -31,9 +31,8 @@
 using eis::va::VideoAnalytics;
 
 VideoAnalytics::VideoAnalytics(
-    std::condition_variable& err_cv, const env_config_t* env_config,
-    char* va_config, const config_mgr_t* g_config_mgr,
-    std::string app_name) :
+    std::condition_variable& err_cv, char* va_config,
+    ConfigMgr* cfg_mgr, std::string app_name) :
     m_err_cv(err_cv), m_enc_type(EncodeType::NONE), m_enc_lvl(0) {
     // Parse the configuration
     config_t* config = json_config_new_from_buffer(va_config);
@@ -118,65 +117,36 @@ VideoAnalytics::VideoAnalytics(
     config_value_destroy(queue_cvt);
 
     // Get configuration values for the subscriber
-    LOG_DEBUG_0("Parsing VA subscription topics");
-
-    char** sub_topics = env_config->get_topics_from_env(SUB);
-    size_t num_of_sub_topics = env_config->get_topics_count(sub_topics);
-
-    if (num_of_sub_topics != 1) {
-        const char* err = "Only one topic is supported. Neither more, nor less";
-        LOG_ERROR("%s", err);
-        config_destroy(config);
-        config_value_destroy(queue_cvt);
-        throw(err);
-    }
-
-    LOG_DEBUG_0("Successfully read SubTopics env value...");
-    config_t* msgbus_config_sub = env_config->get_messagebus_config(
-                                  g_config_mgr, sub_topics, num_of_sub_topics,
-                                  SUB);
+    SubscriberCfg* sub_ctx = cfg_mgr->getSubscriberByIndex(0);
+    config_t* msgbus_config_sub = sub_ctx->getMsgBusConfig();
     if (msgbus_config_sub == NULL) {
-        const char* err = "Failed to get subscriber message bus config";
-        LOG_ERROR("%s", err);
-        config_destroy(config);
-        throw(err);
-    }
-
-    LOG_DEBUG_0("Subscriber config received...");
-
-    char* sub_topic;
-    strtok_r(sub_topics[0], "/", &sub_topics[0]);
-    sub_topic = strtok_r(sub_topics[0], "/", &sub_topics[0]);
-    if (sub_topic == NULL) {
-        const char* err = "Subtopic provided is invalid";
+        const char* err = "msgbus_config_sub initialization failed";
         LOG_ERROR("%s", err);
         throw(err);
     }
+    std::vector<std::string> sub_topics = sub_ctx->getTopics();
+    if (sub_topics.empty()) {
+        const char* err = "Topics list cannot be empty";
+        LOG_ERROR("%s", err);
+        throw(err);
+    }
+
 
     // Get configuration values for the publisher
-    LOG_DEBUG_0("Parsing VA publisher topics");
-
-    char** topics = env_config->get_topics_from_env(PUB);
-    size_t num_of_pub_topics = env_config->get_topics_count(topics);
-
-    if (num_of_pub_topics != 1) {
-        const char* err = "Only one topic is supported. Neither more, nor less";
-        LOG_ERROR("%s", err);
-        config_destroy(config);
-        config_value_destroy(queue_cvt);
-        throw(err);
-    }
-
-    LOG_DEBUG_0("Successfully read PubTopics env value...");
-
-    config_t* pub_config = env_config->get_messagebus_config(g_config_mgr,
-            topics, num_of_pub_topics, PUB);
+    PublisherCfg* pub_ctx = cfg_mgr->getPublisherByIndex(0);
+    config_t* pub_config = pub_ctx->getMsgBusConfig();
     if (pub_config == NULL) {
-        const char* err = "Failed to get publisher message bus config";
+        const char* err = "pub_config initialization failed";
         LOG_ERROR("%s", err);
-        config_destroy(config);
         throw(err);
     }
+    std::vector<std::string> topics = pub_ctx->getTopics();
+    if (topics.empty()) {
+        const char* err = "Topics list cannot be empty";
+        LOG_ERROR("%s", err);
+        throw(err);
+    }
+
     LOG_DEBUG_0("Publisher Config received...");
 
     // Initialize input and output queues
@@ -187,7 +157,6 @@ VideoAnalytics::VideoAnalytics(
     m_publisher = new Publisher(
             pub_config, m_err_cv, topics[0],
             reinterpret_cast<MessageQueue*>(m_udf_output_queue), app_name);
-    free(topics);
 
     config_value_t* udf_value = config->get_config_value(config->cfg,
                                                             "udfs");
@@ -204,7 +173,7 @@ VideoAnalytics::VideoAnalytics(
 
     // Initialize subscriber
     m_subscriber = new Subscriber<Frame>(
-        msgbus_config_sub, m_err_cv, sub_topic,
+        msgbus_config_sub, m_err_cv, sub_topics[0],
         reinterpret_cast<MessageQueue*>(m_udf_input_queue), app_name);
 }
 
