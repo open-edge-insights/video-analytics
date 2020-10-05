@@ -40,8 +40,7 @@
                 ],
                 "AllowedClients": [
                     "*"
-                ],
-                "zmq_recv_hwm": 50
+                ]
             }
         ]
     }
