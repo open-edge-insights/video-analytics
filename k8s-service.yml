@@ -51,7 +51,7 @@ spec:
       #nodeName: master-node
       containers:
       - name: ia-video-analytics
-        image: ia_video_analytics:${EIS_VERSION}
+        image: ${DOCKER_REGISTRY}ia_video_analytics:${EIS_VERSION}
         securityContext:
           privileged: true
         volumeMounts:
