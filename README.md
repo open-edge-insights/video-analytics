@@ -112,9 +112,7 @@ Below is the JSON schema for app's config:
                 "CPU",
                 "GPU",
                 "HDDL",
-                "MYRIAD",
-                "HETERO:FPGA,CPU",
-                "HETERO:FPGA,GPU"
+                "MYRIAD"
               ]
             }
           },
@@ -134,10 +132,6 @@ Below is the JSON schema for app's config:
 
 * For `jpeg` encoding type, `level` is the quality from `0 to 100` (the higher is the better)
 * For `png` encoding type, `level` is the compression level from `0 to 9`. A higher value means a smaller size and longer compression time.
-
-**Note**: Heterogeneous Execution needs to be used with FPGA plugin. One must still point to the CPU plugin or the GPU plugin as fallback devices for heterogeneous plugin. HETERO does not support VPU. For more information refer the below link:
-https://docs.openvinotoolkit.org/latest/_docs_IE_DG_supported_plugins_FPGA.html
-
 
 One can use [JSON validator tool](https://www.jsonschemavalidator.net/) for
 validating the app configuration against the above schema.

@@ -61,12 +61,6 @@ spec:
           mountPath: ${SOCKET_DIR}
         - name: eis-tmp
           mountPath: /var/tmp
-        - name: opencl
-          mountPath: /opt/Intel/OpenCL/Boards
-        - name: altera
-          mountPath: /opt/altera
-        - name: fpga
-          mountPath: /opt/intel/intelFPGA
         - name: "ca-cert"
           mountPath: /run/secrets/ca_etcd
         - name: "video-analytics-cert"
@@ -117,15 +111,6 @@ spec:
       - name: eis-tmp
         hostPath:
           path: /var/tmp
-      - name: opencl
-        hostPath:
-          path: /opt/Intel/OpenCL/Boards
-      - name: altera
-        hostPath:
-          path: /opt/altera
-      - name: fpga
-        hostPath:
-          path: /opt/intel/intelFPGA
       - name: "ca-cert"
         secret:
           secretName: ca-etcd
