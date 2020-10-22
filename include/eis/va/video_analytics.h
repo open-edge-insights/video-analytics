@@ -41,7 +41,6 @@
 #include <eis/utils/json_config.h>
 #include <eis/msgbus/msgbus.h>
 #include <eis/udf/udf_manager.h>
-#include <eis/config_manager/env_config.h>
 #include "eis/config_manager/config_mgr.hpp"
 
 using eis::udf::UdfManager;
