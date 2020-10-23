@@ -69,11 +69,11 @@ RUN /bin/bash -c "source /opt/intel/openvino/bin/setupvars.sh && \
      cd .. ; fi && \
      make install"
 
-COPY --from=video_common ${GO_WORK_DIR}/common/udfs/native ./common/udfs/native
+COPY --from=video_common ${GO_WORK_DIR}/common/video/udfs/native ./common/video/udfs/native
 
 # Build native UDF samples
 RUN /bin/bash -c "source /opt/intel/openvino/bin/setupvars.sh && \
-    cd ./common/udfs/native && \
+    cd ./common/video/udfs/native && \
     rm -rf build && \
     mkdir build && \
     cd build && \
@@ -102,9 +102,9 @@ RUN apt-get remove -y wget && \
     apt-get remove -y curl && \
     apt-get autoremove -y
 
-COPY --from=video_common ${GO_WORK_DIR}/common/udfs/python ./common/udfs/python
+COPY --from=video_common ${GO_WORK_DIR}/common/video/udfs/python ./common/video/udfs/python
 
-ENV PYTHONPATH ${PYTHONPATH}:${GO_WORK_DIR}/common/udfs/python:${GO_WORK_DIR}/common/
+ENV PYTHONPATH ${PYTHONPATH}:${GO_WORK_DIR}/common/video/udfs/python:${GO_WORK_DIR}/common/
 
 ENTRYPOINT ["VideoAnalytics/va_classifier_start.sh"]
 
