@@ -5,7 +5,6 @@
             "level": 95
         },
         "queue_size": 10,
-        "max_jobs": 20,
         "max_workers":4,
         "udfs": [{
             "name": "pcb.pcb_classifier",
