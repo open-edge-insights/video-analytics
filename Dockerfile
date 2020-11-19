@@ -106,5 +106,7 @@ COPY --from=video_common ${GO_WORK_DIR}/common/video/udfs/python ./common/video/
 
 ENV PYTHONPATH ${PYTHONPATH}:${GO_WORK_DIR}/common/video/udfs/python:${GO_WORK_DIR}/common/
 
+HEALTHCHECK NONE
+
 ENTRYPOINT ["VideoAnalytics/va_classifier_start.sh"]
 
