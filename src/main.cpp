@@ -92,6 +92,7 @@ void va_initialize(char* va_config, std::string app_name) {
 }
 
 void on_change_config_callback(const char* key, config_t* value, void* user_data) {
+    LOG_INFO("Callback triggered for key %s", key);
     char* va_config = configt_to_char(value);
     if (strcmp(g_va_config, va_config)) {
         if (g_va) {
