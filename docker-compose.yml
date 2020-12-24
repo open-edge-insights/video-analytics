@@ -35,6 +35,7 @@ services:
         DOCKER_REGISTRY: ${DOCKER_REGISTRY}
         # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
         CMAKE_BUILD_TYPE: "Release"
+        CMAKE_INSTALL_PREFIX: ${EII_INSTALL_PATH}
         RUN_TESTS: "OFF"
     image: ${DOCKER_REGISTRY}ia_video_analytics:${EII_VERSION}
     container_name: ia_video_analytics

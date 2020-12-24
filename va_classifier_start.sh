@@ -23,6 +23,6 @@
 source /opt/intel/openvino/bin/setupvars.sh
 
 # Adding path of libcpu_extension.so to LD_LIBRARY_PATH
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GO_WORK_DIR/common/video/udfs/native/build/ie_cpu_extension
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/app/common/video/udfs/native/build/ie_cpu_extension
 
 ./VideoAnalytics/build/video-analytics
