@@ -20,23 +20,23 @@
 
 # Dockerfile for VideoAnalytics
 
-ARG EIS_VERSION
+ARG EII_VERSION
 ARG DOCKER_REGISTRY
-FROM ${DOCKER_REGISTRY}ia_openvino_base:$EIS_VERSION as openvino
+FROM ${DOCKER_REGISTRY}ia_openvino_base:$EII_VERSION as openvino
 LABEL description="VideoAnalytics image"
 
 WORKDIR ${PY_WORK_DIR}
-ARG EIS_UID
-ARG EIS_USER_NAME
-RUN useradd -r -u ${EIS_UID} -G video ${EIS_USER_NAME}
+ARG EII_UID
+ARG EII_USER_NAME
+RUN useradd -r -u ${EII_UID} -G video ${EII_USER_NAME}
 
 # Installing dependent python modules - needed by opencv
 COPY va_requirements.txt .
 RUN pip3.6 install -r va_requirements.txt && \
     rm -rf va_requirements.txt
 
-FROM ${DOCKER_REGISTRY}ia_common:$EIS_VERSION as common
-FROM ${DOCKER_REGISTRY}ia_video_common:$EIS_VERSION as video_common
+FROM ${DOCKER_REGISTRY}ia_common:$EII_VERSION as common
+FROM ${DOCKER_REGISTRY}ia_video_common:$EII_VERSION as video_common
 
 FROM openvino
 

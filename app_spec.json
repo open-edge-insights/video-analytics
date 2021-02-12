@@ -3,7 +3,7 @@
         "Name": "VideoAnalytics",
         "Description": "VideoAnalytics module manifest",
         "SchemaVersion": "0.2",
-        "ManifestFile": "${idx:videoanalytics:$EIS_VERSION}",
+        "ManifestFile": "${idx:videoanalytics:$EII_VERSION}",
         "Resources": {
             "CPU": 100,
             "MemoryMB": 100

@@ -2,7 +2,7 @@
     "SchemaVersion": "0.2",
     "Runtime": "docker",
     "RuntimeOptions": {
-        "ContainerImage": "${idx:ia_video_analytics:$EIS_VERSION}",
+        "ContainerImage": "${idx:ia_video_analytics:$EII_VERSION}",
         "Privileged": true,
         "TemporaryVolumes": [
             "/dev:/dev",
@@ -13,15 +13,15 @@
         "Protocol": "DIRECT",
         "DataBuckets": [
             {
-                "Name": "EIS/VideoAnalytics",
+                "Name": "EII/VideoAnalytics",
                 "Permissions": "RO"
             },
             {
-                "Name": "EIS/GlobalEnv",
+                "Name": "EII/GlobalEnv",
                 "Permissions": "RO"
             },
             {
-                "Name": "EIS/Publickeys",
+                "Name": "EII/Publickeys",
                 "Permissions": "RO"
             }
         ]

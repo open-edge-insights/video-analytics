@@ -23,8 +23,8 @@
  * @brief VideoAnalytics interface
  */
 
-#ifndef _EIS_VA_VIDEOANALYTICS_H
-#define _EIS_VA_VIDEOANALYTICS_H
+#ifndef _EII_VA_VIDEOANALYTICS_H
+#define _EII_VA_VIDEOANALYTICS_H
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -33,32 +33,32 @@
 #include <exception>
 #include <vector>
 #include <condition_variable>
-#include <eis/udf/frame.h>
-#include <eis/utils/thread_safe_queue.h>
-#include <eis/utils/logger.h>
-#include <eis/udf/udf_manager.h>
-#include <eis/utils/config.h>
-#include <eis/utils/json_config.h>
-#include <eis/msgbus/msgbus.h>
-#include <eis/udf/udf_manager.h>
-#include "eis/config_manager/config_mgr.hpp"
+#include <eii/udf/frame.h>
+#include <eii/utils/thread_safe_queue.h>
+#include <eii/utils/logger.h>
+#include <eii/udf/udf_manager.h>
+#include <eii/utils/config.h>
+#include <eii/utils/json_config.h>
+#include <eii/msgbus/msgbus.h>
+#include <eii/udf/udf_manager.h>
+#include "eii/config_manager/config_mgr.hpp"
 
-using eis::udf::UdfManager;
-using eis::udf::Frame;
-using eis::udf::FrameQueue;
-using eis::udf::EncodeType;
-using eis::msgbus::MessageQueue;
-using eis::msgbus::Subscriber;
-using eis::msgbus::Publisher;
-using namespace eis::config_manager;
+using eii::udf::UdfManager;
+using eii::udf::Frame;
+using eii::udf::FrameQueue;
+using eii::udf::EncodeType;
+using eii::msgbus::MessageQueue;
+using eii::msgbus::Subscriber;
+using eii::msgbus::Publisher;
+using namespace eii::config_manager;
 
-namespace eis {
+namespace eii {
 	namespace va {
 
         // VideoAnalytics class
         class VideoAnalytics {
 
-            // EIS UDFManager
+            // EII UDFManager
             UdfManager* m_udf_manager;
 
             // UDF input queue
@@ -70,10 +70,10 @@ namespace eis {
             // Error condition variable
             std::condition_variable& m_err_cv;
 
-            // EIS MsgBus Publisher
+            // EII MsgBus Publisher
             Publisher* m_publisher;
 
-            // EIS MsgBus Subscriber
+            // EII MsgBus Subscriber
             Subscriber<Frame>* m_subscriber;
 
             // Encoding details

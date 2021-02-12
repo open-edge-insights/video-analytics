@@ -22,13 +22,13 @@
  * @brief VideoAnalytics Implementation
  */
 
-#include "eis/va/video_analytics.h"
+#include "eii/va/video_analytics.h"
 
 #define DEFAULT_QUEUE_SIZE 10
 #define PUB "pub"
 #define SUB "sub"
 
-using eis::va::VideoAnalytics;
+using eii::va::VideoAnalytics;
 
 VideoAnalytics::VideoAnalytics(
     std::condition_variable& err_cv, char* va_config,

@@ -22,7 +22,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: videoanalytics
-  namespace: eis
+  namespace: eii
 spec:
   ports:
   - port: 65013
@@ -36,7 +36,7 @@ metadata:
   labels:
     app: videoanalytics
   name: deployment-video-analytics
-  namespace: eis
+  namespace: eii
 
 spec:
   replicas: 1
@@ -51,15 +51,15 @@ spec:
       #nodeName: master-node
       containers:
       - name: ia-video-analytics
-        image: ${DOCKER_REGISTRY}ia_video_analytics:${EIS_VERSION}
+        image: ${DOCKER_REGISTRY}ia_video_analytics:${EII_VERSION}
         securityContext:
           privileged: true
         volumeMounts:
-        - name: eis-dev
+        - name: eii-dev
           mountPath: /dev
-        - name: eis-socket
+        - name: eii-socket
           mountPath: ${SOCKET_DIR}
-        - name: eis-tmp
+        - name: eii-tmp
           mountPath: /var/tmp
         - name: "ca-cert"
           mountPath: /run/secrets/ca_etcd
@@ -76,7 +76,7 @@ spec:
         - name: PROFILING_MODE
           value: '${PROFILING_MODE}'
         - name: no_proxy
-          value: '${eis_no_proxy},${RTSP_CAMERA_IP}'
+          value: '${eii_no_proxy},${RTSP_CAMERA_IP}'
         - name: ETCD_HOST
           value: etcd
         - name: ETCD_CLIENT_PORT
@@ -102,13 +102,13 @@ spec:
           value: "0.0.0.0:65013"
 
       volumes:
-      - name: eis-dev
+      - name: eii-dev
         hostPath:
           path: /dev
-      - name: eis-socket
+      - name: eii-socket
         hostPath:
-          path: ${EIS_INSTALL_PATH}/sockets
-      - name: eis-tmp
+          path: ${EII_INSTALL_PATH}/sockets
+      - name: eii-tmp
         hostPath:
           path: /var/tmp
       - name: "ca-cert"
