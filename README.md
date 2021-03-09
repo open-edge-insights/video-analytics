@@ -6,7 +6,7 @@ and doing the required inferencing on the chosen Intel(R) Hardware
 
 The high level logical flow of VideoAnalytics pipeline is as below:
 
-1. App reads the application configuration via EIS Configuration Manager which
+1. App reads the application configuration via EII Configuration Manager which
    has details of `encoding` and `udfs`.
 2. App gets the msgbus endpoint configuration from system environment.
 3. Based on above two configurations, app subscribes to the published topic/stream
@@ -15,7 +15,7 @@ The high level logical flow of VideoAnalytics pipeline is as below:
    native/python UDFs for running inferencing and doing any post-processing as
    required. One can refer [UDFs README](../common/video/udfs/README.md) for more details
 5. The frames coming out of chained udfs are published on the different topic/stream
-   on EIS MessageBus.
+   on EII MessageBus.
 
 ## `Configuration`
 
@@ -40,7 +40,7 @@ environment section of this app's service definition in docker-compose.
 Developer mode related overrides go into docker-compose-dev.override.yml
 
 If `AppName` is `VideoAnalytics`, then the app's config would be fetched from
-`/VideoAnalytics/config` key via EIS Configuration Manager.
+`/VideoAnalytics/config` key via EII Configuration Manager.
 Below is the JSON schema for app's config:
 
 ```javascript

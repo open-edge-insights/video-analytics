@@ -29,14 +29,14 @@ services:
       context: $PWD/../VideoAnalytics
       dockerfile: $PWD/../VideoAnalytics/Dockerfile
       args:
-        EIS_VERSION: ${EIS_VERSION}
-        EIS_UID: ${EIS_UID}
-        EIS_USER_NAME: ${EIS_USER_NAME}
+        EII_VERSION: ${EII_VERSION}
+        EII_UID: ${EII_UID}
+        EII_USER_NAME: ${EII_USER_NAME}
         DOCKER_REGISTRY: ${DOCKER_REGISTRY}
         # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
         CMAKE_BUILD_TYPE: "Release"
         RUN_TESTS: "OFF"
-    image: ${DOCKER_REGISTRY}ia_video_analytics:${EIS_VERSION}
+    image: ${DOCKER_REGISTRY}ia_video_analytics:${EII_VERSION}
     container_name: ia_video_analytics
     hostname: ia_video_analytics
     network_mode: host
@@ -51,7 +51,7 @@ services:
       AppName: "VideoAnalytics"
       DEV_MODE: ${DEV_MODE}
       PROFILING_MODE: ${PROFILING_MODE}
-      no_proxy: ${eis_no_proxy},${ETCD_HOST}
+      no_proxy: ${eii_no_proxy},${ETCD_HOST}
       ETCD_HOST: ${ETCD_HOST}
       ETCD_CLIENT_PORT: ${ETCD_CLIENT_PORT}
       ETCD_PREFIX: ${ETCD_PREFIX}
@@ -60,7 +60,7 @@ services:
     volumes:
       - "/var/tmp:/var/tmp"
       - "/dev:/dev"
-      - "vol_eis_socket:${SOCKET_DIR}"
+      - "vol_eii_socket:${SOCKET_DIR}"
     devices:
       # Following devices under /dev filesystem will be needed based on usecase
       # dri - GPU

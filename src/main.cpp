@@ -31,11 +31,11 @@
 #include <fstream>
 #include <iostream>
 #include <safe_lib.h>
-#include <eis/utils/json_validator.h>
-#include "eis/va/video_analytics.h"
+#include <eii/utils/json_validator.h>
+#include "eii/va/video_analytics.h"
 #define MAX_CONFIG_KEY_LENGTH 250
 
-using eis::va::VideoAnalytics;
+using eii::va::VideoAnalytics;
 
 static VideoAnalytics* g_va = NULL;
 static char* g_va_config = NULL;
