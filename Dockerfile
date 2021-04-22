@@ -43,7 +43,7 @@ COPY --from=openvino_base /opt/intel /opt/intel
 
 # Copy src code
 COPY . ./VideoAnalytics
-ENV LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${CMAKE_INSTALL_PREFIX}/lib
+ENV LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${CMAKE_INSTALL_PREFIX}/lib:${CMAKE_INSTALL_PREFIX}/lib/udfs
 RUN chmod +x ./VideoAnalytics/va_classifier_start.sh
 RUN /bin/bash -c "source /opt/intel/openvino/bin/setupvars.sh && \
                   cd VideoAnalytics && \
@@ -70,7 +70,7 @@ COPY --from=builder /root/.local/lib/python3.6/site-packages .local/lib/python3.
 
 COPY --from=video_common /eii/common/video/udfs/python ./common/video/udfs/python
 ENV PYTHONPATH ${PYTHONPATH}:/app/common/video/udfs/python:/app/common/:/app
-ENV LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${CMAKE_INSTALL_PREFIX}/lib
+ENV LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${CMAKE_INSTALL_PREFIX}/lib:${CMAKE_INSTALL_PREFIX}/lib/udfs
 
 HEALTHCHECK NONE
 ENTRYPOINT ["./VideoAnalytics/va_classifier_start.sh"]
