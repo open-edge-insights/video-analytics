@@ -35,7 +35,7 @@ COPY --from=video_common ${CMAKE_INSTALL_PREFIX}/include ${CMAKE_INSTALL_PREFIX}
 COPY --from=video_common ${CMAKE_INSTALL_PREFIX}/lib ${CMAKE_INSTALL_PREFIX}/lib
 COPY --from=video_common ${CMAKE_INSTALL_PREFIX}/bin ${CMAKE_INSTALL_PREFIX}/bin
 COPY --from=video_common /root/.local/bin/cythonize /root/.local/bin/cythonize
-COPY --from=video_common /root/.local/lib/python3.6/site-packages/ /root/.local/lib/python3.6/site-packages
+COPY --from=video_common /root/.local/lib/python3.8/site-packages/ /root/.local/lib/python3.8/site-packages
 COPY --from=video_common /eii/common/cmake ./common/cmake
 COPY --from=video_common /eii/common/libs ./common/libs
 COPY --from=video_common /eii/common/util ./common/util
@@ -66,7 +66,7 @@ COPY --from=builder /app/common/util/*.py common/util/
 COPY --from=builder /app/VideoAnalytics/build/video-analytics ./VideoAnalytics/build/
 COPY --from=builder /app/VideoAnalytics/schema.json ./VideoAnalytics/
 COPY --from=builder /app/VideoAnalytics/*.sh ./VideoAnalytics/
-COPY --from=builder /root/.local/lib/python3.6/site-packages .local/lib/python3.6/site-packages
+COPY --from=builder /root/.local/lib/python3.8/site-packages .local/lib/python3.8/site-packages
 
 COPY --from=video_common /eii/common/video/udfs/python ./common/video/udfs/python
 ENV PYTHONPATH ${PYTHONPATH}:/app/common/video/udfs/python:/app/common/:/app
