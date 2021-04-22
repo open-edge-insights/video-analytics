@@ -40,7 +40,6 @@ services:
     image: ${DOCKER_REGISTRY}ia_video_analytics:${EII_VERSION}
     container_name: ia_video_analytics
     hostname: ia_video_analytics
-    network_mode: host
     security_opt:
     - no-new-privileges    
     healthcheck:
@@ -52,12 +51,16 @@ services:
       AppName: "VideoAnalytics"
       DEV_MODE: ${DEV_MODE}
       PROFILING_MODE: ${PROFILING_MODE}
-      no_proxy: ${eii_no_proxy},${ETCD_HOST}
+      no_proxy: ${ETCD_HOST}
       ETCD_HOST: ${ETCD_HOST}
       ETCD_CLIENT_PORT: ${ETCD_CLIENT_PORT}
       ETCD_PREFIX: ${ETCD_PREFIX}
       CertType: "zmq"
     privileged: true
+    ports:
+      - 65013:65013
+    networks:
+      - eii
     volumes:
       - "/var/tmp:/var/tmp"
       - "/dev:/dev"
