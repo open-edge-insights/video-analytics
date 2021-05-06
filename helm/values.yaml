@@ -1,0 +1,4 @@
+config:
+    video_analytics:
+      name: videoanalytics
+      publish_port: 65013
