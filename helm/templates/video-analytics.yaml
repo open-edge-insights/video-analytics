@@ -18,94 +18,112 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+{{- $global := . -}}
+{{- range $instance_idx := until (int .Values.num_video_instances) -}}
+{{- $instance := "" }}
+{{- $publish_port := "" }}
+{{- $subscriber_port := "" }}
+{{- if eq (int $global.Values.num_video_instances) 1 }}
+{{- $publish_port = $global.Values.config.video_analytics.publish_port }}
+{{- $subscriber_port = $global.Values.config.video_ingestion.publish_port }}
+{{- $instance = "" }}
+{{- end }}
+{{- if gt (int $global.Values.num_video_instances) 1 }}
+{{- $publish_port = add $global.Values.config.video_analytics.publish_port $instance_idx }}
+{{- $subscriber_port = add $global.Values.config.video_ingestion.publish_port  $instance_idx }}
+{{- $instance = add 1 $instance_idx }}
+{{- end }}
+
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.config.video_analytics.name }}
-  namespace: {{ .Values.namespace }}
+  name: {{ $global.Values.config.video_analytics.name }}{{ $instance }}
+  namespace: {{ $global.Values.namespace }}
 spec:
   ports:
-  - port: {{ .Values.config.video_analytics.publish_port }}
+  - port: {{ $publish_port }}
     name: tcp
   selector:
-    app: videoanalytics
+    app: videoanalytics{{ $instance }}
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: videoanalytics
-  name: deployment-video-analytics
-  namespace: {{ .Values.namespace }}
+    app: videoanalytics{{ $instance }}
+  name: deployment-video-analytics{{ $instance }}
+  namespace: {{ $global.Values.namespace }}
 
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: videoanalytics
+      app: videoanalytics{{ $instance }}
   template:
     metadata:
       labels:
-        app: videoanalytics
+        app: videoanalytics{{ $instance }}
     spec:
       containers:
-      - name: ia-video-analytics
-        image: {{ .Values.registry }}ia_video_analytics:{{ .Values.eii_version }}
-        imagePullPolicy: {{ .Values.imagePullPolicy }}
+      - name: ia-video-analytics{{ $instance }}
+        image: {{ $global.Values.registry }}ia_video_analytics:{{ $global.Values.eii_version }}
+        imagePullPolicy: {{ $global.Values.imagePullPolicy }}
         securityContext:
           privileged: true
         volumeMounts:
         - name: eii-dev
           mountPath: /dev
-        - name: {{ .Values.volumes.eii_socket.name }}
-          mountPath: {{ .Values.volumes.eii_socket.location }}
-        {{ if eq .Values.env.dev_mode false}}
+        - name: {{ $global.Values.volumes.eii_socket.name }}
+          mountPath: {{ $global.Values.volumes.eii_socket.location }}
+        {{ if eq $global.Values.env.dev_mode false}}
         - name: etcd-certs
           mountPath: /run/secrets/etcd/
         {{ end }}
 
         env:
         - name: AppName
-          value: "VideoAnalytics"
+          value: "VideoAnalytics{{ $instance }}"
         - name: DEV_MODE
-          value: '{{ .Values.env.dev_mode }}'
+          value: '{{ $global.Values.env.dev_mode }}'
         - name: PROFILING_MODE
-          value: '{{ .Values.env.PROFILING_MODE }}'
+          value: '{{ $global.Values.env.PROFILING_MODE }}'
         - name: ETCD_HOST
-          value: {{ .Values.config.etcd.name }}
+          value: {{ $global.Values.config.etcd.name }}
         - name: ETCD_CLIENT_PORT
-          value: '{{ .Values.config.etcd.client_port }}'
+          value: '{{ $global.Values.config.etcd.client_port }}'
         - name: SUBSCRIBER_ENDPOINT
-          value: "{{ .Values.config.video_ingestion.name }}:{{ .Values.config.video_ingestion.publish_port }}"
+          value: "{{ $global.Values.config.video_ingestion.name }}{{ $instance }}:{{ $subscriber_port }}"
         - name: SUBSCRIBER_TYPE
           value: "zmq_tcp"
         - name: PUBLISHER_ENDPOINT
-          value: "0.0.0.0:{{ .Values.config.video_analytics.publish_port }}"
-        {{ if eq .Values.env.dev_mode false}}
+          value: "0.0.0.0:{{ $publish_port }}"
+        {{ if eq $global.Values.env.dev_mode false}}
         - name: CONFIGMGR_CACERT
           value: "/run/secrets/etcd/ca_certificate.pem"
         - name: CONFIGMGR_CERT
-          value: "/run/secrets/etcd/VideoAnalytics_client_certificate.pem"
+          value: "/run/secrets/etcd/VideoAnalytics{{ $instance }}_client_certificate.pem"
         - name: CONFIGMGR_KEY
-          value: "/run/secrets/etcd/VideoAnalytics_client_key.pem"
+          value: "/run/secrets/etcd/VideoAnalytics{{ $instance }}_client_key.pem"
         {{ end }}
 
       volumes:
       - name: eii-dev
         hostPath:
           path: /dev
-      - name: {{ .Values.volumes.eii_socket.name }}
+      - name: {{ $global.Values.volumes.eii_socket.name }}
         persistentVolumeClaim:
-          claimName: {{ .Values.volumes.eii_socket.name }}
-      {{ if eq .Values.env.dev_mode false}}
+          claimName: {{ $global.Values.volumes.eii_socket.name }}
+      {{ if eq $global.Values.env.dev_mode false}}
       - name: etcd-certs
         secret:
           secretName: eii-certs
           items:
           - key: ca_certificate.pem
             path: ca_certificate.pem
-          - key: VideoAnalytics_client_certificate.pem
-            path: VideoAnalytics_client_certificate.pem
-          - key: VideoAnalytics_client_key.pem
-            path: VideoAnalytics_client_key.pem
+          - key: VideoAnalytics{{ $instance }}_client_certificate.pem
+            path: VideoAnalytics{{ $instance }}_client_certificate.pem
+          - key: VideoAnalytics{{ $instance }}_client_key.pem
+            path: VideoAnalytics{{ $instance }}_client_key.pem
       {{ end }}
+---
+{{- end }}
