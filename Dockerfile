@@ -69,6 +69,7 @@ COPY --from=builder /app/VideoAnalytics/build/video-analytics ./VideoAnalytics/b
 COPY --from=builder /app/VideoAnalytics/schema.json ./VideoAnalytics/
 COPY --from=builder /app/VideoAnalytics/*.sh ./VideoAnalytics/
 COPY --from=builder /root/.local/lib/python3.8/site-packages .local/lib/python3.8/site-packages
+COPY --from=video_common /root/.local/lib .local/lib
 
 COPY --from=video_common /eii/common/video/udfs/python ./common/video/udfs/python
 ENV PYTHONPATH ${PYTHONPATH}:/app/common/video/udfs/python:/app/common/:/app
