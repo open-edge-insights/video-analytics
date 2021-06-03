@@ -24,6 +24,7 @@ services:
   ## Define VideoAnalytics service
   ia_video_analytics:
     depends_on:
+      - ia_video_common
       - ia_openvino_base
     build:
       context: $PWD/../VideoAnalytics
