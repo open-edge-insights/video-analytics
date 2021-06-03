@@ -73,8 +73,10 @@ spec:
         volumeMounts:
         - name: eii-dev
           mountPath: /dev
+        {{- if eq $global.Values.config.video_analytics.IPC true}}
         - name: {{ $global.Values.volumes.eii_socket.name }}
           mountPath: {{ $global.Values.volumes.eii_socket.location }}
+        {{- end }}
         {{ if eq $global.Values.env.dev_mode false}}
         - name: etcd-certs
           mountPath: /run/secrets/etcd/
@@ -91,12 +93,26 @@ spec:
           value: {{ $global.Values.config.etcd.name }}
         - name: ETCD_CLIENT_PORT
           value: '{{ $global.Values.config.etcd.client_port }}'
+        {{- if eq $global.Values.config.video_analytics.IPC false}}
         - name: SUBSCRIBER_ENDPOINT
           value: "{{ $global.Values.config.video_ingestion.name }}{{ $instance }}:{{ $subscriber_port }}"
         - name: SUBSCRIBER_TYPE
           value: "zmq_tcp"
         - name: PUBLISHER_ENDPOINT
           value: "0.0.0.0:{{ $publish_port }}"
+        - name: PUBLISHER_TYPE
+          value: "zmq_tcp"
+        {{- else }}
+        - name: SUBSCRIBER_ENDPOINT
+          value: "{{ $global.Values.env.SOCKET_DIR }}"
+        - name: SUBSCRIBER_TYPE
+          value: "zmq_ipc"
+        - name: PUBLISHER_ENDPOINT
+          value: "{{ $global.Values.env.SOCKET_DIR }}"
+        - name: PUBLISHER_TYPE
+          value: "zmq_ipc"
+        {{- end }}
+
         {{ if eq $global.Values.env.dev_mode false}}
         - name: CONFIGMGR_CACERT
           value: "/run/secrets/etcd/ca_certificate.pem"
@@ -110,9 +126,11 @@ spec:
       - name: eii-dev
         hostPath:
           path: /dev
+      {{- if eq $global.Values.config.video_analytics.IPC true}}
       - name: {{ $global.Values.volumes.eii_socket.name }}
         persistentVolumeClaim:
           claimName: {{ $global.Values.volumes.eii_socket.name }}
+      {{- end }}
       {{ if eq $global.Values.env.dev_mode false}}
       - name: etcd-certs
         secret:
