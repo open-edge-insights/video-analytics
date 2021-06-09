@@ -72,7 +72,9 @@ services:
       # dri - GPU
       # ion - VPU
       # Selective mount can be done for deployment
-      - "/dev/:/dev/"
+      - "/dev/dri:/dev/dri"
+      - "/dev/ion:/dev/ion"
+      - "/dev/bus/usb: /dev/bus/usb"  
     secrets:
       - ca_etcd
       - etcd_VideoAnalytics_cert
