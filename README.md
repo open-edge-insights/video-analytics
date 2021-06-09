@@ -93,7 +93,8 @@ Below is the JSON schema for app's config:
               "type": "string",
               "enum": [
                 "native",
-                "python"
+                "python",
+                "raw_native"
               ]
             },
             "name": {
