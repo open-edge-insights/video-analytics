@@ -22,7 +22,7 @@
 
 ARG EII_VERSION
 ARG DOCKER_REGISTRY
-ARG OPENVINO_IMAGE_VERSION
+ARG OPENVINO_IMAGE
 FROM ${DOCKER_REGISTRY}ia_video_common:$EII_VERSION as video_common
 FROM ${DOCKER_REGISTRY}ia_openvino_base:$EII_VERSION as openvino_base
 FROM ${DOCKER_REGISTRY}ia_eiibase:$EII_VERSION as builder
@@ -54,7 +54,8 @@ RUN /bin/bash -c "source /opt/intel/openvino/bin/setupvars.sh && \
                   cmake -DCMAKE_INSTALL_INCLUDEDIR=${CMAKE_INSTALL_PREFIX}/include -DCMAKE_INSTALL_PREFIX=$CMAKE_INSTALL_PREFIX -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} .. && \
                   make"
 
-FROM openvino/ubuntu20_data_runtime:$OPENVINO_IMAGE_VERSION as runtime
+FROM ${OPENVINO_IMAGE} AS runtime
+
 USER root
 ARG EII_UID
 ARG EII_USER_NAME

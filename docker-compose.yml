@@ -37,16 +37,16 @@ services:
         # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
         CMAKE_BUILD_TYPE: "Release"
         CMAKE_INSTALL_PREFIX: ${EII_INSTALL_PATH}
-        OPENVINO_IMAGE_VERSION: ${OPENVINO_IMAGE_VERSION}
+        OPENVINO_IMAGE: ${OPENVINO_IMAGE}
         RUN_TESTS: "OFF"
     image: ${DOCKER_REGISTRY}ia_video_analytics:${EII_VERSION}
     container_name: ia_video_analytics
     hostname: ia_video_analytics
     security_opt:
-    - no-new-privileges    
+    - no-new-privileges
     healthcheck:
       test: ["CMD-SHELL", "exit", "0"]
-      interval: 5m    
+      interval: 5m
     restart: unless-stopped
     ipc: "none"
     environment:
@@ -65,7 +65,6 @@ services:
       - eii
     volumes:
       - "/var/tmp:/var/tmp"
-      - "/dev:/dev"
       - "vol_eii_socket:${SOCKET_DIR}"
     devices:
       # Following devices under /dev filesystem will be needed based on usecase
@@ -74,7 +73,7 @@ services:
       # Selective mount can be done for deployment
       - "/dev/dri:/dev/dri"
       - "/dev/ion:/dev/ion"
-      - "/dev/bus/usb: /dev/bus/usb"  
+      - "/dev/bus/usb:/dev/bus/usb"
     secrets:
       - ca_etcd
       - etcd_VideoAnalytics_cert
