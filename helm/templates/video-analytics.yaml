@@ -64,6 +64,13 @@ spec:
       labels:
         app: videoanalytics{{ $instance }}
     spec:
+      {{- if eq $global.Values.config.video_ingestion.accelerator "hddl" }}
+      nodeSelector:
+        hddl: "true"
+      {{- else if eq $global.Values.config.video_ingestion.accelerator "ncs2" }}
+      nodeSelector:
+        ncs2: "true"  
+      {{- end }}     
       containers:
       - name: ia-video-analytics{{ $instance }}
         image: {{ $global.Values.DOCKER_REGISTRY }}ia_video_analytics:{{ $global.Values.EII_VERSION }}
