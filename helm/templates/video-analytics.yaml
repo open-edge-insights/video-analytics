@@ -66,7 +66,7 @@ spec:
     spec:
       containers:
       - name: ia-video-analytics{{ $instance }}
-        image: {{ $global.Values.registry }}ia_video_analytics:{{ $global.Values.eii_version }}
+        image: {{ $global.Values.DOCKER_REGISTRY }}ia_video_analytics:{{ $global.Values.EII_VERSION }}
         imagePullPolicy: {{ $global.Values.imagePullPolicy }}
         securityContext:
           privileged: true
@@ -77,7 +77,7 @@ spec:
         - name: {{ $global.Values.volumes.eii_socket.name }}
           mountPath: {{ $global.Values.volumes.eii_socket.location }}
         {{- end }}
-        {{ if eq $global.Values.env.dev_mode false}}
+        {{ if eq $global.Values.env.DEV_MODE false}}
         - name: etcd-certs
           mountPath: /run/secrets/etcd/
         {{ end }}
@@ -86,7 +86,7 @@ spec:
         - name: AppName
           value: "VideoAnalytics{{ $instance }}"
         - name: DEV_MODE
-          value: '{{ $global.Values.env.dev_mode }}'
+          value: '{{ $global.Values.env.DEV_MODE }}'
         - name: PROFILING_MODE
           value: '{{ $global.Values.env.PROFILING_MODE }}'
         - name: ETCD_HOST
@@ -113,7 +113,7 @@ spec:
           value: "zmq_ipc"
         {{- end }}
 
-        {{ if eq $global.Values.env.dev_mode false}}
+        {{ if eq $global.Values.env.DEV_MODE false}}
         - name: CONFIGMGR_CACERT
           value: "/run/secrets/etcd/ca_certificate.pem"
         - name: CONFIGMGR_CERT
@@ -131,7 +131,7 @@ spec:
         persistentVolumeClaim:
           claimName: {{ $global.Values.volumes.eii_socket.name }}
       {{- end }}
-      {{ if eq $global.Values.env.dev_mode false}}
+      {{ if eq $global.Values.env.DEV_MODE false}}
       - name: etcd-certs
         secret:
           secretName: eii-certs
