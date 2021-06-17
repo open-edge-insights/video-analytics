@@ -33,13 +33,12 @@ services:
         EII_VERSION: ${EII_VERSION}
         EII_UID: ${EII_UID}
         EII_USER_NAME: ${EII_USER_NAME}
-        DOCKER_REGISTRY: ${DOCKER_REGISTRY}
         # set CMAKE_BUILD_TYPE value to "Debug" to generate debug symbols
         CMAKE_BUILD_TYPE: "Release"
         CMAKE_INSTALL_PREFIX: ${EII_INSTALL_PATH}
         OPENVINO_IMAGE: ${OPENVINO_IMAGE}
         RUN_TESTS: "OFF"
-    image: ${DOCKER_REGISTRY}ia_video_analytics:${EII_VERSION}
+    image: ${DOCKER_REGISTRY}openedgeinsights/ia_video_analytics:${EII_VERSION}
     container_name: ia_video_analytics
     hostname: ia_video_analytics
     security_opt:
