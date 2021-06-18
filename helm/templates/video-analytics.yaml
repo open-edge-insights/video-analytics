@@ -73,7 +73,7 @@ spec:
       {{- end }}     
       containers:
       - name: ia-video-analytics{{ $instance }}
-        image: {{ $global.Values.DOCKER_REGISTRY }}ia_video_analytics:{{ $global.Values.EII_VERSION }}
+        image: {{ $global.Values.DOCKER_REGISTRY }}openedgeinsights/ia_video_analytics:{{ $global.Values.EII_VERSION }}
         imagePullPolicy: {{ $global.Values.imagePullPolicy }}
         securityContext:
           privileged: true
