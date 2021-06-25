@@ -70,12 +70,20 @@ COPY --from=builder /app/VideoAnalytics/schema.json ./VideoAnalytics/
 COPY --from=builder /app/VideoAnalytics/*.sh ./VideoAnalytics/
 COPY --from=builder /root/.local/lib/python3.8/site-packages .local/lib/python3.8/site-packages
 COPY --from=video_common /root/.local/lib .local/lib
-
 COPY --from=video_common /eii/common/video/udfs/python ./common/video/udfs/python
+
+# Installing Intel® Graphics Compute Runtime for OpenCL™
+RUN /bin/bash -c "source /opt/intel/openvino/bin/setupvars.sh && \
+                 cd /opt/intel/openvino/install_dependencies && \
+                 yes | ./install_NEO_OCL_driver.sh --auto || true"
+
 ENV PYTHONPATH ${PYTHONPATH}:/app/common/video/udfs/python:/app/common/:/app:/app/.local/lib/python3.8/site-packages
 ENV LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${CMAKE_INSTALL_PREFIX}/lib:${CMAKE_INSTALL_PREFIX}/lib/udfs
+
 RUN chown ${EII_USER_NAME}:${EII_USER_NAME} /app /var/tmp
 RUN usermod -a -G users ${EII_USER_NAME}
 USER ${EII_USER_NAME}
+
 HEALTHCHECK NONE
+
 ENTRYPOINT ["./VideoAnalytics/va_classifier_start.sh"]
