@@ -23,6 +23,7 @@ version: '3.6'
 services:
   ## Define VideoAnalytics service
   ia_video_analytics:
+    read_only: true
     depends_on:
       - ia_video_common
       - ia_openvino_base
@@ -57,7 +58,6 @@ services:
       ETCD_CLIENT_PORT: ${ETCD_CLIENT_PORT}
       ETCD_PREFIX: ${ETCD_PREFIX}
       CertType: "zmq"
-    privileged: true
     ports:
       - 65013:65013
     networks:
@@ -65,6 +65,13 @@ services:
     volumes:
       - "/var/tmp:/var/tmp"
       - "vol_eii_socket:${SOCKET_DIR}"
+      - "/dev:/dev"
+    device_cgroup_rules:
+      # Default run - device-cgroup-rule='c 189:* rmw'
+      # NCS2 run - device-cgroup-rule='c 209:* rmw'
+      # Selective rules can be applied for deployment
+      - 'c 189:* rmw'
+      - 'c 209:* rmw'
     devices:
       # Following devices under /dev filesystem will be needed based on usecase
       # dri - GPU
