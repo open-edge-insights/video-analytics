@@ -66,6 +66,7 @@ services:
       - "/var/tmp:/var/tmp"
       - "vol_eii_socket:${SOCKET_DIR}"
       - "/dev:/dev"
+      - "/tmp:/tmp"
     device_cgroup_rules:
       # Default run - device-cgroup-rule='c 189:* rmw'
       # NCS2 run - device-cgroup-rule='c 209:* rmw'
