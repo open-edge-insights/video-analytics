@@ -1,7 +1,7 @@
 config:
     video_analytics:
       name: videoanalytics
-      publish_port: 64013
+      publish_port: 65013
       IPC: false
       # set the accelerator as ncs2 or hddl
       accelerator: ""
