@@ -177,6 +177,10 @@ VideoAnalytics::VideoAnalytics(
         reinterpret_cast<MessageQueue*>(m_udf_input_queue), app_name);
 }
 
+VideoAnalytics& VideoAnalytics::operator=(const VideoAnalytics& src) {
+    return *this;
+}
+
 void VideoAnalytics::start() {
     if (m_publisher) {
         m_publisher->start();
