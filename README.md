@@ -1,3 +1,8 @@
+**Contents**
+
+- [`VideoAnalytics Module`](#videoanalytics-module)
+  - [`Configuration`](#configuration)
+
 # `VideoAnalytics Module`
 
 The VideoAnalytics module is mainly responsibly for running the classifier UDFs
@@ -19,6 +24,11 @@ The high level logical flow of VideoAnalytics pipeline is as below:
 
 ## `Configuration`
 
+1. [Udfs Configuration](../common/video/udfs/README.md)
+2. [Etcd Secrets Configuration](../Etcd_Secrets_Configuration.md) and
+3. [MessageBus Configuration](../common/libs/ConfigMgr/README.md#interfaces) respectively.
+4. [JSON schema](schema.json)
+
 ---
 **NOTE**:
 
@@ -37,93 +47,11 @@ All the app module configuration are added into distributed
 key-value data store under `AppName` env as mentioned in the
 environment section of this app's service definition in docker-compose.
 
-Developer mode related overrides go into docker-compose-dev.override.yml
+Developer mode related overrides go into [docker-compose-dev.override.yml](./docker-compose-dev.override.yml)
 
 If `AppName` is `VideoAnalytics`, then the app's config would be fetched from
 `/VideoAnalytics/config` key via EII Configuration Manager.
-Below is the JSON schema for app's config:
 
-```javascript
-{
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "encoding",
-    "udfs"
-  ],
-  "properties": {
-    "encoding": {
-      "description": "Encoding object",
-      "type": "object",
-      "required": [
-        "type",
-        "level"
-      ],
-      "properties": {
-        "type": {
-          "description": "Encoding type",
-          "type": "string",
-          "enum": [
-              "jpeg",
-              "png"
-            ]
-        },
-        "level": {
-          "description": "Encoding value",
-          "type": "integer",
-          "default": 0
-        }
-      }
-    },
-    "max_workers": {
-      "description": "Number of threads acting on queued jobs",
-      "type": "integer",
-      "default": 4
-    },
-    "udfs": {
-      "description": "Array of UDF config objects",
-      "type": "array",
-      "items": [
-        {
-          "description": "UDF config object",
-          "type": "object",
-          "properties": {
-            "type": {
-              "description": "UDF type",
-              "type": "string",
-              "enum": [
-                "native",
-                "python",
-                "raw_native"
-              ]
-            },
-            "name": {
-              "description": "Unique UDF name",
-              "type": "string"
-            },
-            "device": {
-              "description": "Device on which inference occurs",
-              "type": "string",
-              "enum": [
-                "CPU",
-                "GPU",
-                "HDDL",
-                "MYRIAD"
-              ]
-            }
-          },
-          "additionalProperties": true,
-          "required": [
-            "type",
-            "name",
-            "device"
-          ]
-        }
-      ]
-    }
-  }
-}
-```
 **Note**:
 
 * For `jpeg` encoding type, `level` is the quality from `0 to 100` (the higher is the better)
