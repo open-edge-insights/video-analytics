@@ -1,9 +1,9 @@
 **Contents**
 
-- [`VideoAnalytics Module`](#videoanalytics-module)
-  - [`Configuration`](#configuration)
+- [VideoAnalytics Module](#videoanalytics-module)
+  - [Configuration](#configuration)
 
-# `VideoAnalytics Module`
+# VideoAnalytics Module
 
 The VideoAnalytics module is mainly responsibly for running the classifier UDFs
 and doing the required inferencing on the chosen Intel(R) Hardware
@@ -22,7 +22,7 @@ The high level logical flow of VideoAnalytics pipeline is as below:
 5. The frames coming out of chained udfs are published on the different topic/stream
    on EII MessageBus.
 
-## `Configuration`
+## Configuration
 
 1. [Udfs Configuration](../common/video/udfs/README.md)
 2. [Etcd Secrets Configuration](../Etcd_Secrets_Configuration.md) and
