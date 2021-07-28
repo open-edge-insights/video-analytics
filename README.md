@@ -18,15 +18,15 @@ The high level logical flow of VideoAnalytics pipeline is as below:
    coming from VideoIngestion module.
 4. The frames received in the subscriber are passed onto one or more chained
    native/python UDFs for running inferencing and doing any post-processing as
-   required. One can refer [UDFs README](../common/video/udfs/README.md) for more details
+   required. One can refer [UDFs README](https://github.com/open-edge-insights/video-common/blob/master/udfs/README.md) for more details
 5. The frames coming out of chained udfs are published on the different topic/stream
    on EII MessageBus.
 
 ## Configuration
 
-1. [Udfs Configuration](../common/video/udfs/README.md)
-2. [Etcd Secrets Configuration](../Etcd_Secrets_Configuration.md) and
-3. [MessageBus Configuration](../common/libs/ConfigMgr/README.md#interfaces) respectively.
+1. [Udfs Configuration](https://github.com/open-edge-insights/video-common/blob/master/udfs/README.md)
+2. [Etcd Secrets Configuration](https://github.com/open-edge-insights/eii-core/blob/master/Etcd_Secrets_Configuration.md) and
+3. [MessageBus Configuration](https://github.com/open-edge-insights/eii-core/blob/master/common/libs/ConfigMgr/README.md#interfaces) respectively.
 4. [JSON schema](schema.json)
 
 ---
@@ -34,10 +34,9 @@ The high level logical flow of VideoAnalytics pipeline is as below:
 
 * The `max_workers` and `udfs` are configuration keys related to udfs.
   For more details on udf configuration, please visit
-  [../common/video/udfs/README.md](../common/video/udfs/README.md)
-* For details on Etcd and MessageBus endpoint configuration, visit
-  [Etcd_and_MsgBus_Endpoint_Configuration](../Etcd_and_MsgBus_Endpoint_Configuration.md).
-* In case the VideoAnalytics container found to be consuming a lot of memory, then one of the suspects could be that Algo processing is slower than the frame ingestion rate. Hence a lot of frames are occupying RAM waiting to be processed. In that case user can reduce the high watermark value to acceptable lower number so that RAM consumption will be under control and stay stabilzed. The exact config parameter is called **ZMQ_RECV_HWM** present in [docker-compose.yml](../build/docker-compose.yml). This config is also present in other types of container, hence user can tune them to control the memory bloat if applicable. The config snippet is pasted below:
+  [../common/video/udfs/README.md](https://github.com/open-edge-insights/video-common/blob/master/udfs/README.md)
+* For details on Etcd and MessageBus endpoint configuration, visit  [Etcd_Secrets_Configuration](https://github.com/open-edge-insights/eii-core/blob/master/Etcd_Secrets_Configuration.md).
+* In case the VideoAnalytics container found to be consuming a lot of memory, then one of the suspects could be that Algo processing is slower than the frame ingestion rate. Hence a lot of frames are occupying RAM waiting to be processed. In that case user can reduce the high watermark value to acceptable lower number so that RAM consumption will be under control and stay stabilzed. The exact config parameter is called **ZMQ_RECV_HWM** present in [docker-compose.yml](./docker-compose.yml). This config is also present in other types of container, hence user can tune them to control the memory bloat if applicable. The config snippet is pasted below:
 ```bash
       ZMQ_RECV_HWM: "1000"
 ```
