@@ -82,8 +82,11 @@ ENV LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${CMAKE_INSTALL_PREFIX}/lib:${CMAKE_INSTA
 
 RUN chown ${EII_USER_NAME}:${EII_USER_NAME} /app /var/tmp
 RUN usermod -a -G users ${EII_USER_NAME}
+
+# Needed to not show the warnings while executing sample_onnx UDF
+RUN mkdir -p /home/${EII_USER_NAME} && \
+    chown -R ${EII_USER_NAME}:${EII_USER_NAME} /home/${EII_USER_NAME}/
+
 USER ${EII_USER_NAME}
-
 HEALTHCHECK NONE
-
 ENTRYPOINT ["./VideoAnalytics/va_classifier_start.sh"]
