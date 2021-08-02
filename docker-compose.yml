@@ -65,6 +65,10 @@ services:
     volumes:
       - "/var/tmp:/var/tmp"
       - "vol_eii_socket:${SOCKET_DIR}"
+      # Following devices under /dev filesystem will be needed based on usecase
+      # dri - GPU
+      # ion - VPU
+      # Selective mount can be done for deployment as mounting whole /dev is not recommended
       - "/dev:/dev"
       - "/tmp:/tmp"
     device_cgroup_rules:
@@ -74,10 +78,10 @@ services:
       - 'c 189:* rmw'
       - 'c 209:* rmw'
     devices:
-      # Following devices under /dev filesystem will be needed based on usecase
+      ## Following devices under /dev filesystem will be needed based on usecase
       # dri - GPU
       # ion - VPU
-      # Selective mount can be done for deployment
+      # Selective mount can be done for deployment as mounting whole /dev is not recommended
       - "/dev:/dev"
     secrets:
       - ca_etcd
