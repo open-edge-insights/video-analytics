@@ -95,6 +95,12 @@ namespace eii {
             VideoAnalytics(
                     std::condition_variable& err_cv, char* va_config, ConfigMgr* cfg_mgr, std::string app_name);
 
+            /**
+             * Private @c VideoAnalytics assignment operator.
+             *
+             */
+            VideoAnalytics& operator=(const VideoAnalytics& src);
+
             //Destructor
             ~VideoAnalytics();
 

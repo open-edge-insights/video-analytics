@@ -33,7 +33,7 @@
             {
                 "Name": "default",
                 "Type": "zmq_tcp",
-                "EndPoint": "127.0.0.1:65013",
+                "EndPoint": "0.0.0.0:65013",
                 "Topics": [
                     "camera1_stream_results"
                 ],
