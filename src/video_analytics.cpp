@@ -154,7 +154,7 @@ VideoAnalytics::VideoAnalytics(
     m_udf_output_queue = new FrameQueue(queue_size);
 
     // Initialize Publisher
-    m_publisher = new Publisher(
+    m_publisher = new PublisherThread(
             pub_config, m_err_cv, topics[0],
             reinterpret_cast<MessageQueue*>(m_udf_output_queue), app_name);
 
@@ -172,7 +172,7 @@ VideoAnalytics::VideoAnalytics(
                                    m_enc_lvl);
 
     // Initialize subscriber
-    m_subscriber = new Subscriber<Frame>(
+    m_subscriber = new SubscriberThread<Frame>(
         msgbus_config_sub, m_err_cv, sub_topics[0],
         reinterpret_cast<MessageQueue*>(m_udf_input_queue), app_name);
 }
