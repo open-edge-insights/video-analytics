@@ -32,14 +32,16 @@ The high level logical flow of VideoAnalytics pipeline is as below:
 ---
 **NOTE**:
 
-* The `max_workers` and `udfs` are configuration keys related to udfs.
+- The `max_workers` and `udfs` are configuration keys related to udfs.
   For more details on udf configuration, please visit
   [../common/video/udfs/README.md](https://github.com/open-edge-insights/video-common/blob/master/udfs/README.md)
-* For details on Etcd and MessageBus endpoint configuration, visit  [Etcd_Secrets_Configuration](https://github.com/open-edge-insights/eii-core/blob/master/Etcd_Secrets_Configuration.md).
-* In case the VideoAnalytics container found to be consuming a lot of memory, then one of the suspects could be that Algo processing is slower than the frame ingestion rate. Hence a lot of frames are occupying RAM waiting to be processed. In that case user can reduce the high watermark value to acceptable lower number so that RAM consumption will be under control and stay stabilzed. The exact config parameter is called **ZMQ_RECV_HWM** present in [docker-compose.yml](./docker-compose.yml). This config is also present in other types of container, hence user can tune them to control the memory bloat if applicable. The config snippet is pasted below:
+- For details on Etcd and MessageBus endpoint configuration, visit  [Etcd_Secrets_Configuration](https://github.com/open-edge-insights/eii-core/blob/master/Etcd_Secrets_Configuration.md).
+- In case the VideoAnalytics container found to be consuming a lot of memory, then one of the suspects could be that Algo processing is slower than the frame ingestion rate. Hence a lot of frames are occupying RAM waiting to be processed. In that case user can reduce the high watermark value to acceptable lower number so that RAM consumption will be under control and stay stabilzed. The exact config parameter is called **ZMQ_RECV_HWM** present in [docker-compose.yml](./docker-compose.yml). This config is also present in other types of container, hence user can tune them to control the memory bloat if applicable. The config snippet is pasted below:
+
 ```bash
       ZMQ_RECV_HWM: "1000"
 ```
+
 ---
 
 All the app module configuration are added into distributed
@@ -53,8 +55,8 @@ If `AppName` is `VideoAnalytics`, then the app's config would be fetched from
 
 **Note**:
 
-* For `jpeg` encoding type, `level` is the quality from `0 to 100` (the higher is the better)
-* For `png` encoding type, `level` is the compression level from `0 to 9`. A higher value means a smaller size and longer compression time.
+- For `jpeg` encoding type, `level` is the quality from `0 to 100` (the higher is the better)
+- For `png` encoding type, `level` is the compression level from `0 to 9`. A higher value means a smaller size and longer compression time.
 
 One can use [JSON validator tool](https://www.jsonschemavalidator.net/) for
 validating the app configuration against the above schema.
