@@ -62,7 +62,6 @@ find_package(EIIConfigMgrStatic REQUIRED)
 find_package(EIIMessageBus REQUIRED)
 find_package(UDFLoader REQUIRED)
 find_package(IntelSafeString REQUIRED)
-find_package(WJE REQUIRED)
 
 ## --- Picked required gRPC related CMake configuration taken from https://github.com/grpc/grpc/blob/master/examples/cpp/helloworld/CMakeLists.txt --- ##
 # Looks for protobuf-config.cmake file installed by Protobuf's cmake installation.
@@ -114,9 +113,7 @@ target_link_libraries(video-analytics
         ${_GRPC_GRPCPP}
         ${_PROTOBUF_LIBPROTOBUF}
     PRIVATE
-        ${ZMQ_LIBRARIES}
-        wjelement
-        wjreader)
+        ${ZMQ_LIBRARIES})
 
 # If compile in debug mode, set DEBUG flag for C code
 if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
