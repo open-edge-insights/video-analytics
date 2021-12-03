@@ -57,7 +57,6 @@ services:
       ETCD_HOST: ${ETCD_HOST}
       ETCD_CLIENT_PORT: ${ETCD_CLIENT_PORT}
       ETCD_PREFIX: ${ETCD_PREFIX}
-      CertType: "zmq"
     ports:
       - 65013:65013
     networks:
@@ -71,6 +70,8 @@ services:
       # Selective mount can be done for deployment as mounting whole /dev is not recommended
       - "/dev:/dev"
       - "/tmp:/tmp"
+      - ./Certificates/VideoAnalytics:/run/secrets/VideoAnalytics
+      - ./Certificates/rootca:/run/secrets/rootca
     device_cgroup_rules:
       # Default run - device-cgroup-rule='c 189:* rmw'
       # NCS2 run - device-cgroup-rule='c 209:* rmw'
@@ -83,13 +84,3 @@ services:
       # ion - VPU
       # Selective mount can be done for deployment as mounting whole /dev is not recommended
       - "/dev:/dev"
-    secrets:
-      - ca_etcd
-      - etcd_VideoAnalytics_cert
-      - etcd_VideoAnalytics_key
-
-secrets:
-  etcd_VideoAnalytics_cert:
-    file: provision/Certificates/VideoAnalytics/VideoAnalytics_client_certificate.pem
-  etcd_VideoAnalytics_key:
-    file: provision/Certificates/VideoAnalytics/VideoAnalytics_client_key.pem
