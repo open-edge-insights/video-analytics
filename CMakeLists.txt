@@ -52,17 +52,6 @@ if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json")
     )
 endif()
 
-# Finding packages
-find_package(OpenCV REQUIRED)
-find_package(EIIMsgEnv REQUIRED)
-find_package(cJSON REQUIRED)
-find_package(Threads REQUIRED)
-find_package(EIIUtils REQUIRED)
-find_package(EIIConfigMgrStatic REQUIRED)
-find_package(EIIMessageBus REQUIRED)
-find_package(UDFLoader REQUIRED)
-find_package(IntelSafeString REQUIRED)
-
 ## --- Picked required gRPC related CMake configuration taken from https://github.com/grpc/grpc/blob/master/examples/cpp/helloworld/CMakeLists.txt --- ##
 # Looks for protobuf-config.cmake file installed by Protobuf's cmake installation.
 set(protobuf_MODULE_COMPATIBLE TRUE)
@@ -81,6 +70,17 @@ message(STATUS "Using gRPC ${gRPC_VERSION}")
 set(_GRPC_GRPCPP gRPC::grpc++)
 set(_GRPC_CPP_PLUGIN_EXECUTABLE $<TARGET_FILE:gRPC::grpc_cpp_plugin>)
 ## --- Picked required gRPC related CMake configuration taken from https://github.com/grpc/grpc/blob/master/examples/cpp/helloworld/CMakeLists.txt --- ##
+
+# Finding packages
+find_package(OpenCV REQUIRED)
+find_package(EIIMsgEnv REQUIRED)
+find_package(cJSON REQUIRED)
+find_package(Threads REQUIRED)
+find_package(EIIUtils REQUIRED)
+find_package(EIIConfigMgrStatic REQUIRED)
+find_package(EIIMessageBus REQUIRED)
+find_package(UDFLoader REQUIRED)
+find_package(IntelSafeString REQUIRED)
 
 # Include header directories
 include_directories(

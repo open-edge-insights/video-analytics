@@ -56,7 +56,7 @@ RUN /bin/bash -c "source /opt/intel/openvino/bin/setupvars.sh && \
 FROM ${OPENVINO_IMAGE} AS runtime
 
 USER root
-RUN apt update && apt install --no-install-recommends -y libcjson1 libzmq5
+RUN apt update && apt install --no-install-recommends -y libcjson1 libzmq5 zlib1g
 
 ARG EII_UID
 ARG EII_USER_NAME
