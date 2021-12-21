@@ -131,7 +131,7 @@ spec:
 
         {{ if eq $global.Values.env.DEV_MODE false}}
         - name: CONFIGMGR_CACERT
-          value: "/run/secrets/etcd/ca_certificate.pem"
+          value: "/run/secrets/etcd/cacert.pem"
         - name: CONFIGMGR_CERT
           value: "/run/secrets/etcd/VideoAnalytics{{ $instance }}_client_certificate.pem"
         - name: CONFIGMGR_KEY
@@ -159,8 +159,8 @@ spec:
         secret:
           secretName: eii-certs
           items:
-          - key: ca_certificate.pem
-            path: ca_certificate.pem
+          - key: cacert.pem
+            path: cacert.pem
           - key: VideoAnalytics{{ $instance }}_client_certificate.pem
             path: VideoAnalytics{{ $instance }}_client_certificate.pem
           - key: VideoAnalytics{{ $instance }}_client_key.pem
