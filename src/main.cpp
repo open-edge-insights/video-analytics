@@ -26,12 +26,12 @@
 
 #include <unistd.h>
 #include <stdbool.h>
+#include <safe_lib.h>
+#include <eii/utils/json_validator.h>
 #include <atomic>
 #include <csignal>
 #include <fstream>
 #include <iostream>
-#include <safe_lib.h>
-#include <eii/utils/json_validator.h>
 #include "eii/va/video_analytics.h"
 #define MAX_CONFIG_KEY_LENGTH 250
 
@@ -92,7 +92,8 @@ void va_initialize(char* va_config, std::string app_name) {
     }
 }
 
-void on_change_config_callback(const char* key, config_t* value, void* user_data) {
+void on_change_config_callback(const char* key, config_t* value,
+                               void* user_data) {
     LOG_INFO("Callback triggered for key %s", key);
     char* va_config = configt_to_char(value);
     if (strcmp(g_va_config, va_config)) {
@@ -125,7 +126,7 @@ int main(int argc, char** argv) {
         // Get the configuration from the configuration manager
         g_cfg_mgr = new ConfigMgr();
         AppCfg* cfg = g_cfg_mgr->getAppConfig();
-        if(cfg == NULL) {
+        if (cfg == NULL) {
             throw "Failed to initilize AppCfg object";
         }
         config_t* app_config = cfg->getConfig();
