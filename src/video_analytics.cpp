@@ -221,4 +221,10 @@ VideoAnalytics::~VideoAnalytics() {
     if (m_publisher) {
         delete m_publisher;
     }
+    if (m_udf_input_queue) {
+        delete m_udf_input_queue;
+    }
+    if (m_udf_output_queue) {
+        delete m_udf_output_queue;
+    }
 }
