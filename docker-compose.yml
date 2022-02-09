@@ -70,8 +70,8 @@ services:
       # Selective mount can be done for deployment as mounting whole /dev is not recommended
       - "/dev:/dev"
       - "/tmp:/tmp"
-      - ./Certificates/VideoAnalytics:/run/secrets/VideoAnalytics
-      - ./Certificates/rootca:/run/secrets/rootca
+      - ./Certificates/VideoAnalytics:/run/secrets/VideoAnalytics:ro
+      - ./Certificates/rootca/cacert.pem:/run/secrets/rootca/cacert.pem:ro
     device_cgroup_rules:
       # Default run - device-cgroup-rule='c 189:* rmw'
       # NCS2 run - device-cgroup-rule='c 209:* rmw'
