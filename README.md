@@ -1,17 +1,20 @@
-**Contents**
+# Contents
 
-- [VideoAnalytics Module](#videoanalytics-module)
-  - [Configuration](#configuration)
+- [Contents](#contents)
+  - [VideoAnalytics Module](#videoanalytics-module)
+    - [Configuration](#configuration)
 
-# VideoAnalytics Module
+## VideoAnalytics Module
+
+>**Note:** In this document, you will find labels of 'Edge Insights for Industrial (EII)' for filenames, paths, code snippets, and so on. Consider the references of EII as Open Edge Insights (OEI). This is due to the product name change of EII as OEI.
 
 The VideoAnalytics module is mainly responsibly for running the classifier UDFs
 and doing the required inferencing on the chosen Intel(R) Hardware
 (CPU, GPU, VPU, HDDL) using openVINO.
 
-The high level logical flow of VideoAnalytics pipeline is as below:
+The high-level logical flow of VideoAnalytics pipeline is as follows:
 
-1. App reads the application configuration via EII Configuration Manager which
+1. App reads the application configuration via OEI Configuration Manager which
    has details of `encoding` and `udfs`.
 2. App gets the msgbus endpoint configuration from system environment.
 3. Based on above two configurations, app subscribes to the published topic/stream
@@ -20,17 +23,16 @@ The high level logical flow of VideoAnalytics pipeline is as below:
    native/python UDFs for running inferencing and doing any post-processing as
    required. One can refer [UDFs README](https://github.com/open-edge-insights/video-common/blob/master/udfs/README.md) for more details
 5. The frames coming out of chained udfs are published on the different topic/stream
-   on EII MessageBus.
+   on Message Bus.
 
-## Configuration
+### Configuration
 
 1. [Udfs Configuration](https://github.com/open-edge-insights/video-common/blob/master/udfs/README.md)
 2. [Etcd Secrets Configuration](https://github.com/open-edge-insights/eii-core/blob/master/Etcd_Secrets_Configuration.md) and
 3. [MessageBus Configuration](https://github.com/open-edge-insights/eii-core/blob/master/common/libs/ConfigMgr/README.md#interfaces) respectively.
 4. [JSON schema](schema.json)
 
----
-**NOTE**:
+>**Note:**
 
 - The `max_workers` and `udfs` are configuration keys related to udfs.
   For more details on udf configuration, please visit
@@ -51,9 +53,9 @@ environment section of this app's service definition in docker-compose.
 Developer mode related overrides go into [docker-compose-dev.override.yml](./docker-compose-dev.override.yml)
 
 If `AppName` is `VideoAnalytics`, then the app's config would be fetched from
-`/VideoAnalytics/config` key via EII Configuration Manager.
+`/VideoAnalytics/config` key via OEI Configuration Manager.
 
-**Note**:
+**Note:**
 
 - For `jpeg` encoding type, `level` is the quality from `0 to 100` (the higher is the better)
 - For `png` encoding type, `level` is the compression level from `0 to 9`. A higher value means a smaller size and longer compression time.
