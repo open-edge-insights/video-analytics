@@ -79,8 +79,6 @@ spec:
       - name: ia-video-analytics{{ $instance }}
         image: {{ $global.Values.DOCKER_REGISTRY }}openedgeinsights/ia_video_analytics:{{ $global.Values.EII_VERSION }}
         imagePullPolicy: {{ $global.Values.imagePullPolicy }}
-        securityContext:
-          privileged: true
         volumeMounts:
         - name: eii-dev
           mountPath: /dev
