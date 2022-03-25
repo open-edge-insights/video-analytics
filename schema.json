@@ -1,6 +1,6 @@
 {
   "type": "object",
-  "additionalProperties": false,
+  "additionalProperties": true,
   "required": [
     "udfs"
   ],
@@ -36,8 +36,8 @@
     "udfs": {
       "description": "Array of UDF config objects",
       "type": "array",
-      "items": [
-        {
+      "items": {
+        "oneOf": [{
           "description": "UDF config object",
           "type": "object",
           "required": [
@@ -70,8 +70,8 @@
               ]
             }
           }
-        }
-      ]
+        }]
+      }
     }
   }
 }

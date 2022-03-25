@@ -40,6 +40,7 @@
 #include <eii/utils/config.h>
 #include <eii/utils/json_config.h>
 #include <eii/msgbus/msgbus.h>
+#include <eii/msgbus/msgbus.hpp>
 #include <eii/udf/udf_manager.h>
 #include "eii/config_manager/config_mgr.hpp"
 
@@ -48,8 +49,8 @@ using eii::udf::Frame;
 using eii::udf::FrameQueue;
 using eii::udf::EncodeType;
 using eii::msgbus::MessageQueue;
-using eii::msgbus::Subscriber;
-using eii::msgbus::Publisher;
+using eii::msgbus::SubscriberThread;
+using eii::msgbus::PublisherThread;
 using namespace eii::config_manager;
 
 namespace eii {
@@ -71,10 +72,10 @@ namespace eii {
             std::condition_variable& m_err_cv;
 
             // EII MsgBus Publisher
-            Publisher* m_publisher;
+            PublisherThread* m_publisher;
 
             // EII MsgBus Subscriber
-            Subscriber<Frame>* m_subscriber;
+            SubscriberThread<Frame>* m_subscriber;
 
             // Encoding details
             EncodeType m_enc_type;

@@ -26,16 +26,17 @@
 
 #include <unistd.h>
 #include <stdbool.h>
+#include <safe_lib.h>
+#include <eii/utils/json_validator.h>
 #include <atomic>
 #include <csignal>
 #include <fstream>
 #include <iostream>
-#include <safe_lib.h>
-#include <eii/utils/json_validator.h>
 #include "eii/va/video_analytics.h"
 #define MAX_CONFIG_KEY_LENGTH 250
 
 using eii::va::VideoAnalytics;
+using namespace eii::utils;
 
 static VideoAnalytics* g_va = NULL;
 static char* g_va_config = NULL;
@@ -91,7 +92,8 @@ void va_initialize(char* va_config, std::string app_name) {
     }
 }
 
-void on_change_config_callback(const char* key, config_t* value, void* user_data) {
+void on_change_config_callback(const char* key, config_t* value,
+                               void* user_data) {
     LOG_INFO("Callback triggered for key %s", key);
     char* va_config = configt_to_char(value);
     if (strcmp(g_va_config, va_config)) {
@@ -110,125 +112,6 @@ void on_change_config_callback(const char* key, config_t* value, void* user_data
     }
 }
 
-bool validate_config(char config_key[]) {
-    // Writing to external file
-    std::ofstream out;
-    out.open("/var/tmp/config.json", std::ios::binary);
-    out << config_key;
-    out.close();
-
-    WJReader readjson = NULL;
-    WJReader readschema = NULL;
-    WJElement json = NULL;
-    WJElement schema = NULL;
-
-    // Fetch config file
-    FILE* config_fp = fopen("/var/tmp/config.json", "r");
-    if(config_fp == NULL) {
-        return false;
-    }
-    readjson = WJROpenFILEDocument(config_fp, NULL, 0);
-    if(readjson == NULL) {
-        LOG_ERROR_0("config json could not be read");
-        if(config_fp != NULL) {
-            fclose(config_fp);
-        }
-        return false;
-    }
-    json = WJEOpenDocument(readjson, NULL, NULL, NULL);
-    if(json == NULL) {
-        LOG_ERROR_0("config json could not be read");
-        if(readjson != NULL) {
-            free(readjson);
-        }
-        if(config_fp != NULL) {
-            fclose(config_fp);
-        }
-        return false;
-    }
-
-    // Fetch schema file
-    FILE* schema_fp = fopen("./VideoAnalytics/schema.json", "r");
-    if(schema_fp == NULL) {
-        if(config_fp != NULL) {
-            fclose(config_fp);
-        }
-        return false;
-    }
-    readschema = WJROpenFILEDocument(schema_fp, NULL, 0);
-    if(readschema == NULL) {
-        LOG_ERROR_0("schema json could not be read");
-        if(schema_fp != NULL) {
-            fclose(schema_fp);
-        }
-        if(config_fp != NULL) {
-            fclose(config_fp);
-        }
-        return false;
-    }
-    schema = WJEOpenDocument(readschema, NULL, NULL, NULL);
-    if(schema == NULL) {
-        LOG_ERROR_0("schema json could not be read");
-        if(readschema != NULL) {
-            free(readschema);
-        }
-        if(schema_fp != NULL) {
-            fclose(schema_fp);
-        }
-        if(config_fp != NULL) {
-            fclose(config_fp);
-        }
-        return false;
-    }
-
-    // Validating config against schema
-    bool result = false;
-    if(schema != NULL && json != NULL) {
-        result = validate_json(schema, json);
-    }
-
-    // Close schema validation related documents
-    if(json != NULL) {
-        WJECloseDocument(json);
-    }
-    if(schema != NULL) {
-        WJECloseDocument(schema);
-    }
-    if(readjson != NULL) {
-        WJRCloseDocument(readjson);
-    }
-    if(readschema != NULL) {
-        WJRCloseDocument(readschema);
-    }
-
-    // Closing json config & schema file pointers
-    if(config_fp != NULL) {
-        fclose(config_fp);
-    }
-    if(schema_fp != NULL) {
-        fclose(schema_fp);
-    }
-
-    if (!result) {
-        // Clean up and return if failure
-        if(readjson != NULL) {
-            free(readjson);
-        }
-        if(json != NULL) {
-            free(json);
-        }
-        if(readschema != NULL) {
-            free(readschema);
-        }
-        if(schema != NULL) {
-            free(schema);
-        }
-        clean_up();
-        return false;
-    }
-    return true;
-}
-
 int main(int argc, char** argv) {
     signal(SIGINT, signal_callback_handler);
     signal(SIGABRT, signal_callback_handler);
@@ -243,7 +126,7 @@ int main(int argc, char** argv) {
         // Get the configuration from the configuration manager
         g_cfg_mgr = new ConfigMgr();
         AppCfg* cfg = g_cfg_mgr->getAppConfig();
-        if(cfg == NULL) {
+        if (cfg == NULL) {
             throw "Failed to initilize AppCfg object";
         }
         config_t* app_config = cfg->getConfig();
@@ -259,7 +142,8 @@ int main(int argc, char** argv) {
         LOG_DEBUG("App config: %s", g_va_config);
 
         // Validating config against schema
-        if (!validate_config(g_va_config)) {
+        if (!validate_json_file_buffer(
+                    "./VideoAnalytics/schema.json", g_va_config)) {
             LOG_ERROR_0("Schema validation failed");
             return -1;
         }

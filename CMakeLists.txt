@@ -31,7 +31,7 @@ set(EII_COMMON_CMAKE "${CMAKE_CURRENT_SOURCE_DIR}/../common/cmake")
 set(CMAKE_CXX_STANDARD 14)
 
 # Set CFLAGS for C/C++
-set(CMAKE_C_FLAGS "-fPIE -fPIC -O2 -Wall -pedantic -fstack-protector-strong -D_FORTIFY_SOURCE=2")
+set(CMAKE_C_FLAGS "-fPIE -fPIC -O2 -Wall -pedantic -fstack-protector-strong -fno-strict-overflow -fno-delete-null-pointer-checks -fwrapv -D_FORTIFY_SOURCE=2")
 set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS}")
 
 # Set LDFLAGS
@@ -52,18 +52,6 @@ if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json")
     )
 endif()
 
-# Finding packages
-find_package(OpenCV REQUIRED)
-find_package(EIIMsgEnv REQUIRED)
-find_package(cJSON REQUIRED)
-find_package(Threads REQUIRED)
-find_package(EIIUtils REQUIRED)
-find_package(EIIConfigMgrStatic REQUIRED)
-find_package(EIIMessageBus REQUIRED)
-find_package(UDFLoader REQUIRED)
-find_package(IntelSafeString REQUIRED)
-find_package(WJE REQUIRED)
-
 ## --- Picked required gRPC related CMake configuration taken from https://github.com/grpc/grpc/blob/master/examples/cpp/helloworld/CMakeLists.txt --- ##
 # Looks for protobuf-config.cmake file installed by Protobuf's cmake installation.
 set(protobuf_MODULE_COMPATIBLE TRUE)
@@ -82,6 +70,17 @@ message(STATUS "Using gRPC ${gRPC_VERSION}")
 set(_GRPC_GRPCPP gRPC::grpc++)
 set(_GRPC_CPP_PLUGIN_EXECUTABLE $<TARGET_FILE:gRPC::grpc_cpp_plugin>)
 ## --- Picked required gRPC related CMake configuration taken from https://github.com/grpc/grpc/blob/master/examples/cpp/helloworld/CMakeLists.txt --- ##
+
+# Finding packages
+find_package(OpenCV REQUIRED)
+find_package(EIIMsgEnv REQUIRED)
+find_package(cJSON REQUIRED)
+find_package(Threads REQUIRED)
+find_package(EIIUtils REQUIRED)
+find_package(EIIConfigMgrStatic REQUIRED)
+find_package(EIIMessageBus REQUIRED)
+find_package(UDFLoader REQUIRED)
+find_package(IntelSafeString REQUIRED)
 
 # Include header directories
 include_directories(
@@ -114,9 +113,7 @@ target_link_libraries(video-analytics
         ${_GRPC_GRPCPP}
         ${_PROTOBUF_LIBPROTOBUF}
     PRIVATE
-        ${ZMQ_LIBRARIES}
-        wjelement
-        wjreader)
+        ${ZMQ_LIBRARIES})
 
 # If compile in debug mode, set DEBUG flag for C code
 if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
