@@ -61,7 +61,7 @@ If `AppName` is `VideoAnalytics`, then the app's config would be fetched from
 One can use [JSON validator tool](https://www.jsonschemavalidator.net/) for
 validating the app configuration against the above schema.
 
-### Updating Security Context of VideoIngestion Helm Charts for enabling K8s environment to access/detect Basler/usb Device
+### Updating Security Context of VideoAnalytics Helm Charts for enabling K8s environment to access/detect Basler/usb Device
 
 Please follow the steps to update helm charts for enabling K8s environment to access/detect Basler Camera and NCS2 Device
 
