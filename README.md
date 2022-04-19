@@ -2,6 +2,8 @@
 
 - [VideoAnalytics Module](#videoanalytics-module)
   - [Configuration](#configuration)
+  - [Set Securiry Context to Enable Basler/USB Camera or NCS2 devicen helm environment](#updating-security-context-of-videoingestion-helm-charts-for-enabling-k8s-environment-to-accessdetect-baslerusb-device)
+
 
 # VideoAnalytics Module
 
@@ -58,3 +60,29 @@ If `AppName` is `VideoAnalytics`, then the app's config would be fetched from
 
 One can use [JSON validator tool](https://www.jsonschemavalidator.net/) for
 validating the app configuration against the above schema.
+
+### Updating Security Context of VideoIngestion Helm Charts for enabling K8s environment to access/detect Basler/usb Device
+
+Please follow the steps to update helm charts for enabling K8s environment to access/detect Basler Camera and NCS2 Device
+
+* Open `EII_HOME_DIR/IEdgeInsights/VideoAnalytics/helm/templates/video-analytics.yaml` file
+
+* Update below security context snippet
+  ```yml
+        securityContext:
+          privileged: true
+  ```
+  in the yml file as:
+  ```yaml
+    ...
+    ...
+    ...
+        imagePullPolicy: {{ $global.Values.imagePullPolicy }}
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: dev
+          mountPath: /dev
+    ...
+  ```
+  * Re-run `builder.py` to apply these changes to your deployment helm charts.
